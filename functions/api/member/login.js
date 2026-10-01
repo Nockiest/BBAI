@@ -1,7 +1,7 @@
 // functions/api/member/login.js
 // POST /api/member/login
 // Body: { email, constituency?, mp_name? }
-// Emails a one-time magic login link so a confirmed ASVA member can suggest an
+// Emails a one-time magic login link so a confirmed BBAI signatory can suggest an
 // edit to their MP's scorecard rating. `constituency`/`mp_name`, if given, are
 // carried through the login session so /api/member/verify can deep-link the
 // member straight back to the card they started from.

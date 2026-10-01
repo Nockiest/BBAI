@@ -46,6 +46,7 @@ export async function onRequest(context) {
     .from('mp_ratings')
     .select('grade, bullets, sources')
     .eq('constituency', constituency)
+    .eq('mp_name', mpName)
     .maybeSingle();
 
   const record = {
@@ -69,6 +70,7 @@ export async function onRequest(context) {
     .select('id')
     .eq('member_id', member.id)
     .eq('constituency', constituency)
+    .eq('mp_name', mpName)
     .eq('status', 'pending')
     .maybeSingle();
 

@@ -68,7 +68,7 @@ export async function onRequest(context) {
       updated_by:        'agent-confirmed',
       updated_at:        now,
       human_reviewed_at: now,
-    }, { onConflict: 'constituency' });
+    }, { onConflict: 'constituency,mp_name' });
 
   if (upsertError) {
     console.error('confirm upsert error:', upsertError.message || upsertError);

@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Send new members to partners
         env:
-          BASE_URL: ${{ vars.SITE_BASE_URL || 'https://aisafetyvoteralliance.co.uk' }}
+          BASE_URL: ${{ vars.SITE_BASE_URL || 'https://bbai.pauseai.cz' }}
           SECRET: ${{ secrets.AGENT_INGEST_SECRET }}
         run: |
           if [ -z "$SECRET" ]; then

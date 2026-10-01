@@ -90,7 +90,8 @@ export async function onRequest(context) {
         updated_at: new Date().toISOString(),
         signatory_fixed_at: new Date().toISOString(),
       })
-      .eq('constituency', row.constituency);
+      .eq('constituency', row.constituency)
+      .eq('mp_name', row.mp_name);
     if (upErr) {
       console.error(`signatory-fix update ${row.constituency}:`, upErr.message || upErr);
       entry.error = 'update failed';

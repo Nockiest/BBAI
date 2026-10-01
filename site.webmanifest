@@ -1,6 +1,6 @@
 {
-  "name": "ASVA - AI Safety Voter Alliance",
-  "short_name": "ASVA",
+  "name": "BBAI - Blok bezpečné AI",
+  "short_name": "BBAI",
   "icons": [
     { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
     { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }

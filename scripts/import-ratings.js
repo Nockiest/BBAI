@@ -1,11 +1,12 @@
 // scripts/import-ratings.js
 // One-time (idempotent) seed of the CURRENT sheet grades into Supabase mp_ratings,
 // so existing ratings become the baseline that the review page and manual editing
-// build on. Safe to re-run: it upserts by constituency.
+// build on. Safe to re-run: it upserts by (constituency, mp_name) — a region can
+// hold several current deputies, each seeded as their own row.
 //
-// Reads data.json (build it first with `npm run build`), then for every seat that
-// has a real grade (A–F or DNR — '?'/unscored seats are left to the sheet/agent),
-// writes the current MP's grade + bullets + evidence into mp_ratings.
+// Reads data.json (build it first with `npm run build`), then for every current
+// deputy that has a real grade (A–F or DNR — '?'/unscored deputies are left to
+// the sheet/agent), writes their grade + bullets + evidence into mp_ratings.
 //
 // Usage:
 //   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/import-ratings.js
@@ -54,47 +55,39 @@ try {
   process.exit(1);
 }
 
-const { hexMap = [], candidates = {} } = data;
+// `constituencies` in data.json means "regions" (kraje) — see scripts/fetch-data.js.
+const { constituencies = [], candidates = {} } = data;
 
 // Grades worth seeding — a real assessment, not "not scored".
 const REAL_GRADES = new Set(['A', 'B', 'C', 'D', 'E', 'F', 'DNR']);
 
-function stripHonorifics(s) {
-  return (s || '').replace(/^(The\s+)?(Rt\.?\s+Hon\.?\s+)?(Sir|Dame|Dr\.?|Mr\.?|Mrs\.?|Ms\.?|Miss|Prof(?:essor)?)\s+/i, '').trim();
-}
-function normName(s) {
-  return (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
-}
-
 const rows = [];
-for (const hex of hexMap) {
-  const grade = (hex.asvaGrade || '').toUpperCase();
-  if (!hex.mpName || !REAL_GRADES.has(grade)) continue;
+for (const region of constituencies) {
+  const list = candidates[region.name] || [];
+  for (const cand of list) {
+    if (!cand.current_mp) continue;
+    const grade = (cand.grade || '').toUpperCase();
+    if (!REAL_GRADES.has(grade)) continue;
 
-  // Find the current MP's card to lift bullets + evidence.
-  const list = candidates[hex.name] || [];
-  const mpNorm = normName(stripHonorifics(hex.mpName));
-  const cand = list.find(c => c.current_mp) ||
-               list.find(c => normName(stripHonorifics(c.name)) === mpNorm) || {};
+    const bullets = [];
+    for (let i = 1; i <= 5; i++) { const b = (cand[`bullet${i}`] || '').trim(); if (b) bullets.push(b); }
 
-  const bullets = [];
-  for (let i = 1; i <= 5; i++) { const b = (cand[`bullet${i}`] || '').trim(); if (b) bullets.push(b); }
+    const sources = [];
+    for (let i = 1; i <= 6; i++) {
+      const t = (cand[`evidence${i}`] || '').trim();
+      const u = (cand[`evidence${i}_url`] || '').trim();
+      if (u) sources.push({ title: t || '', url: u });
+    }
 
-  const sources = [];
-  for (let i = 1; i <= 6; i++) {
-    const t = (cand[`evidence${i}`] || '').trim();
-    const u = (cand[`evidence${i}_url`] || '').trim();
-    if (u) sources.push({ title: t || '', url: u });
+    rows.push({
+      constituency: region.name,
+      mp_name:      cand.name,
+      grade,
+      bullets,
+      sources,
+      updated_by:   'sheet-import',
+    });
   }
-
-  rows.push({
-    constituency: hex.name,
-    mp_name:      hex.mpName,
-    grade,
-    bullets,
-    sources,
-    updated_by:   'sheet-import',
-  });
 }
 
 console.log(`Prepared ${rows.length} rating(s) to seed from data.json.`);
@@ -110,7 +103,7 @@ let written = 0;
 // Upsert in chunks so a large seed doesn't hit request-size limits.
 for (let i = 0; i < rows.length; i += 100) {
   const chunk = rows.slice(i, i + 100);
-  const { error } = await supabase.from('mp_ratings').upsert(chunk, { onConflict: 'constituency' });
+  const { error } = await supabase.from('mp_ratings').upsert(chunk, { onConflict: 'constituency,mp_name' });
   if (error) {
     console.error('Upsert error:', error.message || error);
     process.exit(1);

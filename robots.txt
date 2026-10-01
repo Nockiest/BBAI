@@ -3,4 +3,4 @@ Allow: /
 Disallow: /goldenpath
 Disallow: /api/
 
-Sitemap: https://aisafetyvoteralliance.co.uk/sitemap.xml
+Sitemap: https://bbai.pauseai.cz/sitemap.xml

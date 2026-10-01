@@ -34,7 +34,7 @@ it isn't already. Skip this step if it's already enabled.
    (still signed in as `aiforasva@gmail.com`). If that link asks you to
    search for it instead: Google Account → **Security** → search "App
    Passwords" in the search box at the top.
-2. Enter a name to remember it by, e.g. `ASVA Scorecard` → **Create**.
+2. Enter a name to remember it by, e.g. `BBAI Scorecard` → **Create**.
 3. Google shows a 16-character password (four groups of four, e.g. `abcd
    efgh ijkl mnop`). Copy it — you won't be able to see it again (though
    you can always revoke it and generate a new one).
@@ -62,7 +62,7 @@ App Passwords page without affecting your normal login.
 ## 5. Test it
 
 Sign the pledge on the live site with an email address you can check. You
-should receive "Confirm your ASVA membership" within a few seconds, sent
+should receive "Potvrďte svůj slib BBAI" within a few seconds, sent
 from `aiforasva@gmail.com`. Click the link and confirm you land on the
 "Email confirmed" page, and that the constituency's member count on the map
 increases by one.

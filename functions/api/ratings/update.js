@@ -26,13 +26,15 @@ export async function onRequest(context) {
   const grade = normalizeGrade(body.grade);
   if (!grade) return json({ error: 'Invalid grade' }, 400);
 
-  // Preserve the existing MP name unless one is supplied. mp_ratings.mp_name is
-  // NOT NULL, so an update to a row that somehow lacks a name still needs one.
+  // mp_name is required: mp_ratings is keyed (constituency, mp_name), and a region
+  // can hold several deputies, so it can't be inferred from constituency alone.
+  // Fall back to the region's sole rating only when there is exactly one.
   let mpName = body.mp_name ? String(body.mp_name).trim() : '';
   if (!mpName) {
     const { data: existing } = await supabase
-      .from('mp_ratings').select('mp_name').eq('constituency', constituency).maybeSingle();
-    mpName = existing?.mp_name || constituency;
+      .from('mp_ratings').select('mp_name').eq('constituency', constituency).limit(2);
+    if (existing && existing.length === 1) mpName = existing[0].mp_name;
+    else return json({ error: 'mp_name is required (region has multiple or no ratings)' }, 400);
   }
 
   // Saving a rating by hand IS a human review, so stamp human_reviewed_at: this
@@ -51,7 +53,7 @@ export async function onRequest(context) {
       updated_by:        'manual',
       updated_at:        now,
       human_reviewed_at: now,
-    }, { onConflict: 'constituency' });
+    }, { onConflict: 'constituency,mp_name' });
 
   if (error) {
     console.error('ratings update error:', error.message || error);

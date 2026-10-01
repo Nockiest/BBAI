@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="cs">
 <head>
   <meta charset="utf-8" />
   <link rel="icon" href="favicon.ico" sizes="any">
@@ -9,23 +9,23 @@
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ASVA - Scorecard</title>
+  <title>BBAI - Hodnocení</title>
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
-  <meta property="og:title" content="ASVA - Scorecard" />
-  <meta property="og:description" content="Find your MP's AI safety grade and the evidence behind it, then pledge your vote." />
-  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/scorecard" />
-  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:site_name" content="BBAI - Blok bezpečné AI" />
+  <meta property="og:title" content="BBAI - Hodnocení" />
+  <meta property="og:description" content="Najděte si známku svého poslance na bezpečnost AI i důkazy, na kterých je založená, a podepište slib." />
+  <meta property="og:url" content="https://bbai.pauseai.cz/scorecard" />
+  <meta property="og:image" content="https://bbai.pauseai.cz/og-banner.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="ASVA logo" />
+  <meta property="og:image:alt" content="Logo BBAI" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="ASVA - Scorecard" />
-  <meta name="twitter:description" content="Find your MP's AI safety grade and the evidence behind it, then pledge your vote." />
-  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
-  <meta name="description" content="Find your MP's AI safety grade and the evidence behind it, then pledge your vote." />
-  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/scorecard" />
+  <meta name="twitter:title" content="BBAI - Hodnocení" />
+  <meta name="twitter:description" content="Najděte si známku svého poslance na bezpečnost AI i důkazy, na kterých je založená, a podepište slib." />
+  <meta name="twitter:image" content="https://bbai.pauseai.cz/og-banner.png" />
+  <meta name="description" content="Najděte si známku svého poslance na bezpečnost AI i důkazy, na kterých je založená, a podepište slib." />
+  <link rel="canonical" href="https://bbai.pauseai.cz/scorecard" />
   <meta name="turbo-cache-control" content="no-cache">
   <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
   <script type="module" src="turbo.js"></script>
@@ -35,24 +35,24 @@
 
 <!-- Site navigation -->
 <nav class="sitenav" id="sitenav" data-turbo-permanent>
-  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="BBAI home"><img src="BBAI_Logo.png" alt="BBAI" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>BBAI</span>'"></a></div>
   <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
   <div class="sitenav-links" id="sitenavLinks">
-    <a class="sitenav-welcome" href="index.html">Welcome</a>
-    <a href="why-ai-safety.html">Why AI Safety</a>
+    <a class="sitenav-welcome" href="index.html">Úvod</a>
+    <a href="why-ai-safety.html">Proč bezpečnost AI</a>
     <span class="sitenav-sep">|</span>
-    <a href="pledge.html">Sign the Pledge</a>
+    <a href="pledge.html">Podepsat slib</a>
     <span class="sitenav-sep">|</span>
-    <a href="overview.html">National Overview</a>
+    <a href="overview.html">Celostátní přehled</a>
     <span class="sitenav-sep">|</span>
-    <a href="scorecard.html">Local Scorecard</a>
+    <a href="scorecard.html">Místní hodnocení</a>
     <span class="sitenav-sep">|</span>
-    <a href="founding-statement.html">Founding Statement</a>
+    <a href="founding-statement.html">Zakládající prohlášení</a>
     <span class="sitenav-sep">|</span>
-    <a href="about.html">About Us</a>
+    <a href="about.html">O nás</a>
   </div>
   <div class="sitenav-right">
-    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+    <a href="share.html" class="sitenav-share-link" aria-label="Sdílet tento web" title="Sdílet tento web"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
   </div>
   <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
   <script>
@@ -90,17 +90,17 @@
       <input
         type="text"
         id="constituencySearch"
-        placeholder="Search by postcode, constituency, MP or candidate…"
+        placeholder="Hledejte podle kraje, poslance nebo kandidáta…"
         autocomplete="off"
-        aria-label="Search by postcode, constituency, MP or candidate"
+        aria-label="Hledejte podle kraje, poslance nebo kandidáta"
       >
-      <button id="clearBtn" class="clear-btn" aria-label="Clear search">×</button>
+      <button id="clearBtn" class="clear-btn" aria-label="Vymazat hledání">×</button>
       <div id="constituencyDropdown"></div>
     </div>
   </div>
 </div>
 
-<div id="noConstituencyPrompt" style="max-width:calc(900px - 28px);margin:12px auto 0;background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.06);padding:20px;text-align:center;font-size:20px;color:var(--ink);">Find your constituency above, or conduct a search.</div>
+<div id="noConstituencyPrompt" style="max-width:calc(900px - 28px);margin:12px auto 0;background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.06);padding:20px;text-align:center;font-size:20px;color:var(--ink);">Najděte svůj kraj výše, nebo ho vyhledejte.</div>
 
 <!-- Scorecard -->
 <div class="app">
@@ -109,15 +109,15 @@
       <div class="header">
         <div class="titleBlock">
           <div class="constituency" id="titleConstituency">—</div>
-          <div class="subtitle">Scorecard</div>
+          <div class="subtitle">Hodnocení</div>
         </div>
         <button type="button" class="sc-share-btn" id="scShareBtn" hidden>
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-          <span id="scShareLabel">Share this scorecard</span>
+          <span id="scShareLabel">Sdílet toto hodnocení</span>
         </button>
       </div>
       <div class="cards" id="cards">
-        <div class="loading">Loading...</div>
+        <div class="loading">Načítání...</div>
       </div>
     </div>
   </div>
@@ -125,62 +125,62 @@
 
 <!-- Member-edit modal: appended once, reused for whichever card's "Submit a
      member edit" button was clicked (see window.openMemberEditModal below). -->
-<div class="member-edit-overlay" id="memberEditOverlay" role="dialog" aria-modal="true" aria-label="Suggest an edit">
+<div class="member-edit-overlay" id="memberEditOverlay" role="dialog" aria-modal="true" aria-label="Navrhnout úpravu">
   <div class="member-edit-box">
-    <button type="button" class="member-edit-close" id="meClose" aria-label="Close">×</button>
-    <h2 id="meTitle">Suggest an edit</h2>
+    <button type="button" class="member-edit-close" id="meClose" aria-label="Zavřít">×</button>
+    <h2 id="meTitle">Navrhnout úpravu</h2>
     <span class="member-edit-sub" id="meSubtitle"></span>
 
     <!-- Step 1: request a login link -->
     <div id="meStepLogin">
       <p style="font-size:14px;color:#444;line-height:1.6;margin-bottom:16px;">
-        ASVA members can suggest a grade, bullet points, or sources for this MP. We'll email you a one-time link to confirm it's you.
+        Signatáři BBAI mohou navrhnout známku, odrážky nebo zdroje pro tohoto poslance. Pošleme vám jednorázový odkaz, kterým potvrdíte, že jste to vy.
       </p>
       <div class="member-edit-field">
-        <label for="meEmail">Your email address</label>
-        <input type="email" id="meEmail" autocomplete="email" placeholder="you@example.com">
+        <label for="meEmail">Vaše e-mailová adresa</label>
+        <input type="email" id="meEmail" autocomplete="email" placeholder="vy@example.com">
       </div>
       <div class="member-edit-actions">
-        <button type="button" class="member-edit-btn member-edit-btn-primary" id="meLoginBtn">Email me a login link</button>
+        <button type="button" class="member-edit-btn member-edit-btn-primary" id="meLoginBtn">Poslat přihlašovací odkaz e-mailem</button>
       </div>
       <div class="member-edit-status" id="meLoginStatus"></div>
       <p class="member-edit-not-member">
-        Not a member yet? <a href="pledge.html">Sign the pledge</a> to join — or if you'd rather not create an account,
-        <a id="meMailtoFallback" href="#">email us your suggestion</a> instead.
+        Ještě jste nepodepsal/a slib? <a href="pledge.html">Podepište slib</a> a staňte se signatářem - nebo pokud si nechcete vytvářet účet,
+        <a id="meMailtoFallback" href="#">pošlete nám svůj návrh e-mailem</a>.
       </p>
     </div>
 
     <!-- Step 2: the edit form (shown once a valid member session is found) -->
     <div id="meStepForm" hidden>
-      <a href="member-edit-guide.html" target="_blank" rel="noopener noreferrer" class="member-edit-guide-link">Read the style guide before you start →</a>
+      <a href="member-edit-guide.html" target="_blank" rel="noopener noreferrer" class="member-edit-guide-link">Přečtěte si stylistickou příručku, než začnete →</a>
       <div class="member-edit-field">
-        <label for="meGrade">Grade</label>
+        <label for="meGrade">Známka</label>
         <select id="meGrade">
           <option value="A">A</option>
           <option value="B">B</option>
           <option value="C">C</option>
-          <option value="?">? (not scored)</option>
-          <option value="DNR">DNR (did not respond)</option>
+          <option value="?">? (nehodnoceno)</option>
+          <option value="DNR">DNR (neodpověděl/a)</option>
           <option value="D">D</option>
           <option value="E">E</option>
           <option value="F">F</option>
         </select>
       </div>
       <div class="member-edit-field">
-        <label>Justification bullets <span class="member-edit-hint">tap to edit · drag ⠿ to reorder</span></label>
+        <label>Odrážky s odůvodněním <span class="member-edit-hint">klepnutím upravíte · přetažením ⠿ změníte pořadí</span></label>
         <div id="meBullets"></div>
       </div>
       <div class="member-edit-field">
-        <label>Sources <span class="member-edit-hint">tap to edit · drag ⠿ to reorder</span></label>
+        <label>Zdroje <span class="member-edit-hint">klepnutím upravíte · přetažením ⠿ změníte pořadí</span></label>
         <div id="meSources"></div>
       </div>
       <div class="member-edit-field">
-        <label for="meNote">Note to the reviewer <span class="member-edit-hint">optional</span></label>
-        <textarea id="meNote" placeholder="Anything the reviewer should know"></textarea>
+        <label for="meNote">Poznámka pro recenzenta <span class="member-edit-hint">nepovinné</span></label>
+        <textarea id="meNote" placeholder="Cokoli, co by měl recenzent vědět"></textarea>
       </div>
       <div class="member-edit-actions">
-        <button type="button" class="member-edit-btn member-edit-btn-primary" id="meSubmitBtn">Submit for review</button>
-        <button type="button" class="member-edit-btn member-edit-btn-secondary" id="meCancelBtn">Cancel</button>
+        <button type="button" class="member-edit-btn member-edit-btn-primary" id="meSubmitBtn">Odeslat k posouzení</button>
+        <button type="button" class="member-edit-btn member-edit-btn-secondary" id="meCancelBtn">Zrušit</button>
       </div>
       <div class="member-edit-status" id="meFormStatus"></div>
     </div>
@@ -221,9 +221,9 @@
   let peopleIndex = []; // { name, party, constituency, isMP } for MP/candidate search
   let currentListData = []; // the rendered constituency's candidate rows, for the member-edit modal's prefill
 
-  // Flatten every candidate (and current MP) into a searchable index. The
-  // candidates map already includes each seat's current MP, so anyone here is
-  // guaranteed to render as a card on their constituency's scorecard.
+  // Flatten every candidate (and current deputy) into a searchable index. The
+  // candidates map already includes each region's current deputies, so anyone
+  // here is guaranteed to render as a card on their region's scorecard.
   function buildPeopleIndex() {
     const map = (allData && allData.candidates) || {};
     const seen = new Set();
@@ -237,8 +237,9 @@
       peopleIndex.push({ name, party: (party || '').trim(), constituency, isMP: !!isMP });
     };
     Object.keys(map).forEach(cons => (map[cons] || []).forEach(c => add(c.name, c.party, cons, c.current_mp)));
-    // Include any confirmed-rating MP name too, in case it differs from the sheet.
-    Object.keys(ratingsMap).forEach(cons => add(ratingsMap[cons].mp_name, '', cons, true));
+    // Include any confirmed-rating deputy names too, in case they differ from the
+    // sheet. A region can carry several confirmed ratings, so this is an array.
+    Object.keys(ratingsMap).forEach(cons => (ratingsMap[cons] || []).forEach(r => add(r.mp_name, '', cons, true)));
     peopleIndex.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
   }
 
@@ -254,29 +255,33 @@
     return allData.constituencies;
   }
 
-  // Apply a confirmed rating to the current MP's card for a constituency,
-  // overriding the sheet grade/bullets/evidence. Returns a new list.
+  // Apply confirmed ratings to their matching deputies' cards for a constituency,
+  // overriding the sheet grade/bullets/evidence. A region can carry several
+  // confirmed ratings (one per current deputy), so each is matched to its OWN
+  // candidate by name — never just "the" current MP. Returns a new list.
   function applyRating(constituencyName, list) {
-    const r = ratingsMap[constituencyName];
-    if (!r) return list;
-    const bullets = r.bullets || [], sources = r.sources || [];
-    const overrides = {
-      grade: r.grade,
-      bullet1: bullets[0] || '', bullet2: bullets[1] || '', bullet3: bullets[2] || '',
-      bullet4: bullets[3] || '', bullet5: bullets[4] || '',
-      evidence1: sources[0]?.title || '', evidence1_url: sources[0]?.url || '',
-      evidence2: sources[1]?.title || '', evidence2_url: sources[1]?.url || '',
-      evidence3: sources[2]?.title || '', evidence3_url: sources[2]?.url || '',
-      evidence4: sources[3]?.title || '', evidence4_url: sources[3]?.url || '',
-      evidence5: sources[4]?.title || '', evidence5_url: sources[4]?.url || '',
-      evidence6: sources[5]?.title || '', evidence6_url: sources[5]?.url || '',
-      last_updated: (r.updated_at || '').slice(0, 10),
-    };
+    const ratings = ratingsMap[constituencyName];
+    if (!ratings || !ratings.length) return list;
     const norm = s => (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
     const out = list.map(c => ({ ...c }));
-    let target = out.find(c => c.current_mp) || out.find(c => norm(c.name) === norm(r.mp_name));
-    if (target) Object.assign(target, overrides);
-    else out.push({ name: r.mp_name, party: '', current_mp: true, ...overrides });
+    for (const r of ratings) {
+      const bullets = r.bullets || [], sources = r.sources || [];
+      const overrides = {
+        grade: r.grade,
+        bullet1: bullets[0] || '', bullet2: bullets[1] || '', bullet3: bullets[2] || '',
+        bullet4: bullets[3] || '', bullet5: bullets[4] || '',
+        evidence1: sources[0]?.title || '', evidence1_url: sources[0]?.url || '',
+        evidence2: sources[1]?.title || '', evidence2_url: sources[1]?.url || '',
+        evidence3: sources[2]?.title || '', evidence3_url: sources[2]?.url || '',
+        evidence4: sources[3]?.title || '', evidence4_url: sources[3]?.url || '',
+        evidence5: sources[4]?.title || '', evidence5_url: sources[4]?.url || '',
+        evidence6: sources[5]?.title || '', evidence6_url: sources[5]?.url || '',
+        last_updated: (r.updated_at || '').slice(0, 10),
+      };
+      let target = out.find(c => norm(c.name) === norm(r.mp_name));
+      if (target) Object.assign(target, overrides);
+      else out.push({ name: r.mp_name, party: '', current_mp: true, ...overrides });
+    }
     return out;
   }
 
@@ -336,7 +341,7 @@
       const name = selectedConstituency;
       if (!name) return;
       const url = shareUrlFor(name);
-      const shareData = { title: name + ' — ASVA scorecard', text: 'See how ' + name + '’s MP scores on AI safety:', url: url };
+      const shareData = { title: name + ' - hodnocení BBAI', text: 'Podívejte se, jak skórují poslanci na bezpečnost AI - ' + name + ':', url: url };
       // Native share sheet where available (mobile); otherwise copy the link.
       if (navigator.share) {
         navigator.share(shareData).catch(() => {});
@@ -345,7 +350,7 @@
       const copy = navigator.clipboard && navigator.clipboard.writeText
         ? navigator.clipboard.writeText(url)
         : Promise.reject();
-      copy.then(() => flashShare('Link copied!'), () => flashShare('Press Ctrl+C'));
+      copy.then(() => flashShare('Odkaz zkopírován!'), () => flashShare('Stiskněte Ctrl+C'));
     });
   }
 
@@ -355,8 +360,8 @@
 
   // Keep the whole prompt readable on small screens: swap to a shorter
   // placeholder where the full one would be clipped by the input width.
-  const PLACEHOLDER_FULL  = 'Search by postcode, constituency, MP or candidate…';
-  const PLACEHOLDER_SHORT = 'Search postcode, MP or candidate…';
+  const PLACEHOLDER_FULL  = 'Hledejte podle kraje, poslance nebo kandidáta…';
+  const PLACEHOLDER_SHORT = 'Hledejte poslance nebo kandidáta…';
   function updatePlaceholder() {
     constituencySearch.placeholder =
       window.innerWidth <= 560 ? PLACEHOLDER_SHORT : PLACEHOLDER_FULL;
@@ -376,8 +381,6 @@
 
   constituencySearch.addEventListener('input', e => {
     updateClearButton();
-    const raw = e.target.value.trim();
-    if (FULL_POSTCODE_RE.test(raw)) { handlePostcode(raw); return; }
     filterAndShowDropdown(e.target.value.toLowerCase());
   });
   constituencySearch.addEventListener('focus', () => {
@@ -405,41 +408,18 @@
   function addPersonItem(p) {
     const item = document.createElement('div');
     item.className = 'dropdown-item dropdown-person';
-    const sub = [p.party, p.constituency].filter(Boolean).join(' · ') + (p.isMP ? ' · Current MP' : '');
+    const sub = [p.party, p.constituency].filter(Boolean).join(' · ') + (p.isMP ? ' · Současný poslanec' : '');
     item.innerHTML = '<span class="dp-name">' + escHTML(p.name) + '</span>' +
                      (sub ? '<span class="dp-sub"> · ' + escHTML(sub) + '</span>' : '');
     item.addEventListener('click', () => selectPerson(p));
     constituencyDropdown.appendChild(item);
   }
 
-  // A full UK postcode typed into the search box is resolved to a constituency
-  // via postcodes.io (nothing stored) and offered in the dropdown; the user taps
-  // it to load that scorecard, just like any other constituency match.
-  const FULL_POSTCODE_RE = /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/;
-  let postcodeSeq = 0;
-  async function handlePostcode(pc) {
-    const seq = ++postcodeSeq;
-    constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">Looking up postcode…</div>';
-    constituencyDropdown.style.display = 'block';
-    let cons = null;
-    try {
-      const r = await fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc.trim()));
-      if (r.ok) { const j = await r.json(); const res = j && j.result; cons = res && (res.parliamentary_constituency_2024 || res.parliamentary_constituency); }
-    } catch (_) { /* offline / bad postcode — fall back to name search */ }
-    if (seq !== postcodeSeq) return;                       // a newer keystroke superseded this
-    if (cons) {
-      const match = allConstituencies.find(c => c.name.toLowerCase() === cons.toLowerCase());
-      constituencyDropdown.innerHTML = '';
-      if (match) {
-        addGroupLabel('Constituency for this postcode');
-        addConsItem(match.name);
-      } else {
-        constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">No scorecard for ' + escHTML(cons) + '</div>';
-      }
-      return;
-    }
-    filterAndShowDropdown(pc.toLowerCase());
-  }
+  // NOTE: the original UK version of this page resolved a typed postcode to a
+  // constituency via postcodes.io (UK-only) here. There's no equivalent lookup
+  // wired up for Czech postal codes → regions, so that shortcut has been
+  // removed; typing a postal code just falls through to the plain name search
+  // below (which won't match anything, same as any other non-region text).
 
   function filterAndShowDropdown(term) {
     term = (term || '').trim();
@@ -450,7 +430,7 @@
     // found" until the page was refreshed (and a refresh usually "fixed" it
     // only because /data.json was then served from cache almost instantly).
     if (!allConstituencies.length) {
-      constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">Loading constituencies…</div>';
+      constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">Načítání krajů…</div>';
       constituencyDropdown.style.display = 'block';
       return;
     }
@@ -459,7 +439,7 @@
     const peopleMatches = term ? peopleIndex.filter(p => p.name.toLowerCase().includes(term)) : [];
 
     if (!consMatches.length && !peopleMatches.length) {
-      constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">No matches found</div>';
+      constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">Nic nenalezeno</div>';
       constituencyDropdown.style.display = 'block';
       return;
     }
@@ -467,11 +447,11 @@
     constituencyDropdown.innerHTML = '';
     const showLabels = consMatches.length && peopleMatches.length;
     if (consMatches.length) {
-      if (showLabels) addGroupLabel('Constituencies');
+      if (showLabels) addGroupLabel('Kraje');
       consMatches.forEach(c => addConsItem(c.name));
     }
     if (peopleMatches.length) {
-      addGroupLabel('Candidates & MPs');
+      addGroupLabel('Kandidáti a poslanci');
       peopleMatches.slice(0, 12).forEach(addPersonItem);
     }
     constituencyDropdown.style.display = 'block';
@@ -509,12 +489,12 @@
     noConstituencyPrompt.style.display = 'none';
     if (scShareBtn) scShareBtn.hidden = false;
     syncShareUrl(constituency);
-    cards.innerHTML = '<div class="loading">Loading candidates...</div>';
+    cards.innerHTML = '<div class="loading">Načítání kandidátů...</div>';
     try {
       const list = await fetchCandidates(constituency);
       currentListData = list;
       if (!list.length) {
-        cards.innerHTML = '<div class="empty">No candidates found for this constituency.</div>';
+        cards.innerHTML = '<div class="empty">Pro tento kraj nebyli nalezeni žádní kandidáti.</div>';
         return;
       }
       cards.innerHTML = list.map(r => {
@@ -548,7 +528,7 @@
                 <div class="pill">${escHTML(GRADE_LABEL[g] || g)}</div>
               </div>
               <div class="cell middle">
-                <div class="name">${escHTML(r.name)}${r.current_mp ? '<span class="current-mp-tag">Current MP</span>' : ''}</div>
+                <div class="name">${escHTML(r.name)}${r.current_mp ? '<span class="current-mp-tag">Současný poslanec</span>' : ''}</div>
                 ${bullets.length ? `<ul>${bullets.join('')}</ul>` : ''}
               </div>
               ${r.current_mp ? `
@@ -563,7 +543,7 @@
                   <rect x="1" y="13.5" width="18" height="1.5"/>
                   <rect x="1" y="17" width="18" height="1.5"/>
                 </svg>
-                Current MP
+                Současný poslanec
               </div>` : ''}
               <div class="cell right">
                 ${escHTML(r.party)}
@@ -572,19 +552,19 @@
             </div>
             <div class="card-expanded">
               <div class="expanded-meta">
-                ${lastUpdated ? `<span>Last updated: ${escHTML(lastUpdated)}</span>` : '<span></span>'}
+                ${lastUpdated ? `<span>Naposledy aktualizováno: ${escHTML(lastUpdated)}</span>` : '<span></span>'}
               </div>
               ${evidences.length ? `<ul class="evidence-list">${evidences.join('')}</ul>` : ''}
               <div class="card-links-row">
-                <a href="mailto:contact@aisafetyvoteralliance.co.uk?subject=Scorecard%20update%20for%20${encodeURIComponent(r.name)}"
+                <a href="mailto:kontakt@bbai.pauseai.cz?subject=Aktualizace%20hodnocen%C3%AD%20pro%20${encodeURIComponent(r.name)}"
                    class="suggest-link"
                    onclick="event.stopPropagation()">
-                  Something to add or something we got wrong? Let us know by email →
+                  Máte něco k doplnění, nebo jsme něco spletli? Dejte nám vědět e-mailem →
                 </a>
                 <button type="button" class="member-edit-trigger"
                         data-constituency="${escHTML(constituency)}" data-mp="${escHTML(r.name)}"
                         onclick="event.stopPropagation(); window.openMemberEditModal(this.dataset.constituency, this.dataset.mp)">
-                  Submit a Member edit →
+                  Navrhnout úpravu jako signatář →
                 </button>
               </div>
             </div>
@@ -607,18 +587,18 @@
         }
       }
     } catch {
-      cards.innerHTML = '<div class="error">Error loading candidates.</div>';
+      cards.innerHTML = '<div class="error">Chyba při načítání kandidátů.</div>';
     }
   }
 
   // ── Member-edit modal ────────────────────────────────────────────────────
-  // Suggests an edit to an MP's rating as a confirmed ASVA member. Login is a
+  // Suggests an edit to an MP's rating as a confirmed BBAI signatory. Login is a
   // magic link (see functions/api/member/*, lib/member-auth.js) entirely
   // separate from the admin Golden Path session; the edit is only ever staged
   // (functions/api/member-submissions/create.js) — nothing here writes to the
   // live rating directly. The bullets/sources sub-editors (drag to reorder)
   // are the same shared component Golden Path uses — see editable-list.js.
-  const editableList     = window.ASVAEditableList.editableList;
+  const editableList     = window.BBAIEditableList.editableList;
   const meOverlay        = document.getElementById('memberEditOverlay');
   const meTitle          = document.getElementById('meTitle');
   const meSubtitle       = document.getElementById('meSubtitle');
@@ -686,7 +666,7 @@
     meClearStatus(meLoginStatus);
     meEmail.value = '';
     meLoginBtn.disabled = false;
-    meLoginBtn.textContent = 'Email me a login link';
+    meLoginBtn.textContent = 'Poslat přihlašovací odkaz e-mailem';
   }
 
   function meShowFormStep(values) {
@@ -694,20 +674,20 @@
     meStepForm.hidden = false;
     meClearStatus(meFormStatus);
     meSubmitBtn.disabled = false;
-    meSubmitBtn.textContent = 'Submit for review';
+    meSubmitBtn.textContent = 'Odeslat k posouzení';
     meRenderForm(values);
   }
 
   window.openMemberEditModal = function (constituency, mpName) {
     meContext = { constituency, mpName };
-    meTitle.textContent = 'Suggest an edit';
-    meSubtitle.textContent = mpName + ' — ' + constituency;
-    meMailtoFallback.href = 'mailto:contact@aisafetyvoteralliance.co.uk?subject=' +
-      encodeURIComponent('Scorecard update for ' + mpName);
+    meTitle.textContent = 'Navrhnout úpravu';
+    meSubtitle.textContent = mpName + ' - ' + constituency;
+    meMailtoFallback.href = 'mailto:kontakt@bbai.pauseai.cz?subject=' +
+      encodeURIComponent('Aktualizace hodnocení pro ' + mpName);
     meOverlay.classList.add('show');
     document.body.style.overflow = 'hidden';
     meShowLoginStep(); // default while the session check below resolves
-    fetch('/api/member/session?constituency=' + encodeURIComponent(constituency), { credentials: 'same-origin' })
+    fetch('/api/member/session?constituency=' + encodeURIComponent(constituency) + '&mp_name=' + encodeURIComponent(mpName), { credentials: 'same-origin' })
       .then(r => r.json())
       .then(session => {
         // A newer click on a different card superseded this check.
@@ -739,24 +719,24 @@
   meLoginBtn.addEventListener('click', () => {
     const email = meEmail.value.trim();
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      meShowStatus(meLoginStatus, 'Please enter a valid email address.', 'err');
+      meShowStatus(meLoginStatus, 'Zadejte prosím platnou e-mailovou adresu.', 'err');
       return;
     }
     meLoginBtn.disabled = true;
-    meLoginBtn.textContent = 'Sending…';
+    meLoginBtn.textContent = 'Odesílání…';
     fetch('/api/member/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, constituency: meContext && meContext.constituency, mp_name: meContext && meContext.mpName }),
     })
       .then(() => {
-        meShowStatus(meLoginStatus, "If that email matches an ASVA member, we've sent a login link — check your inbox.", 'ok');
-        meLoginBtn.textContent = 'Link sent';
+        meShowStatus(meLoginStatus, 'Pokud tento e-mail odpovídá signatáři BBAI, poslali jsme přihlašovací odkaz - zkontrolujte si schránku.', 'ok');
+        meLoginBtn.textContent = 'Odkaz odeslán';
       })
       .catch(() => {
-        meShowStatus(meLoginStatus, 'Something went wrong — please try again.', 'err');
+        meShowStatus(meLoginStatus, 'Něco se pokazilo - zkuste to prosím znovu.', 'err');
         meLoginBtn.disabled = false;
-        meLoginBtn.textContent = 'Email me a login link';
+        meLoginBtn.textContent = 'Poslat přihlašovací odkaz e-mailem';
       });
   });
 
@@ -765,7 +745,7 @@
     const bullets = meBulletsEditor ? meBulletsEditor.getValues() : [];
     const sources = meSourcesEditor ? meSourcesEditor.getValues() : [];
     meSubmitBtn.disabled = true;
-    meSubmitBtn.textContent = 'Submitting…';
+    meSubmitBtn.textContent = 'Odesílání…';
     fetch('/api/member-submissions/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -780,7 +760,7 @@
       .then(r => {
         if (r.status === 401) {
           meShowLoginStep();
-          meShowStatus(meLoginStatus, 'Your session expired — please log in again.', 'err');
+          meShowStatus(meLoginStatus, 'Vaše přihlášení vypršelo - přihlaste se prosím znovu.', 'err');
           return null;
         }
         return r.json();
@@ -788,19 +768,19 @@
       .then(data => {
         if (!data) return;
         if (data.success) {
-          meShowStatus(meFormStatus, 'Thanks — your suggested edit has been sent for review.', 'ok');
-          meSubmitBtn.textContent = 'Submitted';
+          meShowStatus(meFormStatus, 'Děkujeme - váš návrh úpravy byl odeslán k posouzení.', 'ok');
+          meSubmitBtn.textContent = 'Odesláno';
           setTimeout(meCloseModal, 1800);
         } else {
-          meShowStatus(meFormStatus, data.error || 'Something went wrong — please try again.', 'err');
+          meShowStatus(meFormStatus, data.error || 'Něco se pokazilo - zkuste to prosím znovu.', 'err');
           meSubmitBtn.disabled = false;
-          meSubmitBtn.textContent = 'Submit for review';
+          meSubmitBtn.textContent = 'Odeslat k posouzení';
         }
       })
       .catch(() => {
-        meShowStatus(meFormStatus, 'Something went wrong — please try again.', 'err');
+        meShowStatus(meFormStatus, 'Něco se pokazilo - zkuste to prosím znovu.', 'err');
         meSubmitBtn.disabled = false;
-        meSubmitBtn.textContent = 'Submit for review';
+        meSubmitBtn.textContent = 'Odeslat k posouzení';
       });
   });
 
@@ -850,7 +830,7 @@
         history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
       }
     } catch {
-      cards.innerHTML = '<div class="error">Failed to load constituencies.</div>';
+      cards.innerHTML = '<div class="error">Nepodařilo se načíst kraje.</div>';
     }
   })();
 
@@ -859,7 +839,7 @@
 
 <!-- Site footer -->
 <footer class="sitefooter">
-  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+  <a href="privacy.html">Zásady ochrany osobních údajů</a><span class="sep">·</span><a href="mailto:kontakt@bbai.pauseai.cz">kontakt@bbai.pauseai.cz</a>
 </footer>
 
 </body>

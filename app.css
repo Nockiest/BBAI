@@ -1,5 +1,5 @@
 /* =====================================================================
-   ASVA shared stylesheet
+   BBAI shared stylesheet
    ---------------------------------------------------------------------
    This single file is linked (identically) on every page. Because the
    <head> is then the same everywhere, Turbo Drive has no per-page
@@ -57,7 +57,7 @@ body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(-
 .sitenav-sep{ color:#ccc; font-weight:400; }
 .sitenav-welcome{ display:none; }   /* mobile hamburger only (shown in the media query below) */
 /* Share link: a logo-height icon pinned to the far right of the nav, in the
-   ASVA logo's dark blue (#0b2e42). Its container (.sitenav-right) mirrors the
+   BBAI logo's dark blue (#0b2e42). Its container (.sitenav-right) mirrors the
    brand's flex:1 so the link group still sits at the true page centre. Hover —
    and the active state on the share page itself — give it the same red pill +
    white treatment as the text links (the SVG uses fill:currentColor). */
@@ -1350,7 +1350,7 @@ body.page-confirmed{
   @media(max-width:600px){ .confirm-card{ padding:28px 24px 40px; } .confirm-card h1{ font-size:28px; } .confirm-card p{ font-size:16px; } }
 
   /* Share tools embedded in the success view. These component styles mirror the
-     share page (body.page-share in the SHARE ASVA section below); they are
+     share page (body.page-share in the SHARE BBAI section below); they are
      repeated here, scoped to this page, so the shared markup renders the same
      without altering the standalone share page. If you restyle the share
      buttons there, mirror the change here too. */
@@ -1427,17 +1427,17 @@ body.page-privacy{
    share page and the confirmation page pick them up. The SVGs use
    fill:currentColor, so `color` recolours the glyph; an id selector outranks the
    per-page `.share-btn .share-btn-ico` default, so these win on both pages.
-   Brand-less options — Share…, Email, QR — keep the ASVA accent. Instagram has no
+   Brand-less options — Share…, Email, QR — keep the BBAI accent. Instagram has no
    single colour, so its glyph carries an inline SVG gradient in the page markup. */
 #shareWhatsApp .share-btn-ico{ color:#25D366; }
 #shareX        .share-btn-ico{ color:#0f1419; }
 #shareFacebook .share-btn-ico{ color:#1877F2; }
 #shareLinkedIn .share-btn-ico{ color:#0A66C2; }
 
-/* "Share this scorecard" button in the scorecard header — sits where the ASVA
+/* "Share this scorecard" button in the scorecard header — sits where the BBAI
    logo used to, as the header's right-hand item. The header is align-items:center,
    so this single-line button centres on the midpoint of the constituency/Scorecard
-   text on the left. page-scorecard doesn't define --accent, so the ASVA red is set
+   text on the left. page-scorecard doesn't define --accent, so the BBAI red is set
    literally here. */
 body.page-scorecard .sc-share-btn{
   display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; white-space:nowrap;
@@ -1453,7 +1453,7 @@ body.page-scorecard .sc-share-btn.copied{ background:#1f9d55; }
 body.page-scorecard .sc-share-btn[hidden]{ display:none; }
 
 
-/* ===================== SHARE ASVA — share.html (body.page-share) ===================== */
+/* ===================== SHARE BBAI — share.html (body.page-share) ===================== */
 body.page-share{
   --accent:#CC1133; --accent-dark:#a50f27;
   /* Matches the other content pages (about / case-for-concern): 900px centred
@@ -1504,7 +1504,7 @@ body.page-share{
   .qr-box h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:28px; margin-bottom:22px; }
   .qr-canvas{ position:relative; margin:0 auto 18px; width:320px; max-width:100%; aspect-ratio:1/1; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
   .qr-canvas svg{ width:100%; height:100%; display:block; }
-  /* ASVA shield + tick set into the middle of the code. Error-correction level
+  /* BBAI shield + tick set into the middle of the code. Error-correction level
      'H' lets the centre be covered while the code still scans; the white pad
      gives the logo a clean quiet zone. */
   /* The QR's centre is cleared to white, so the logo needs only a small white
@@ -1525,7 +1525,7 @@ body.page-share{
 }
 
 
-/* ── Logo link (shared): only the ASVA logo is clickable, not the blank
+/* ── Logo link (shared): only the BBAI logo is clickable, not the blank
    space beside it. The .sitenav-brand container still grows (flex:1) to keep
    the centred link group aligned to the page centre; the anchor hugs the img. */
 .sitenav-logo-link{ display:inline-block; line-height:0; }

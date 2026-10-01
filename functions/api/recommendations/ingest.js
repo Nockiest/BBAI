@@ -6,9 +6,10 @@
 //
 // Called by the research skill (.claude/skills/research-mps) to drop a batch of
 // DRAFT ratings into mp_recommendations as 'pending'. These are never shown on
-// the site — they wait for review at /goldenpath.html. Re-ingesting a constituency
-// replaces its existing pending draft (there is one pending row per seat), so
-// re-running the skill refreshes rather than duplicates.
+// the site — they wait for review at /goldenpath.html. Re-ingesting a (region,
+// deputy) pair replaces its existing pending draft (there is one pending row per
+// (constituency, mp_name) — a region can hold several deputies), so re-running
+// the skill refreshes rather than duplicates.
 
 import { normalizeGrade, sanitizeBullets, sanitizeSources } from '../../../lib/ratings.js';
 import { enforceCoverage } from '../../../lib/signatory-status.js';
@@ -60,14 +61,21 @@ export async function onRequest(context) {
 
   if (!rows.length) return json({ error: 'No valid recommendations', skipped }, 400);
 
-  // Replace any existing pending draft for these seats, then insert the fresh
-  // batch. (There is a partial unique index allowing one pending row per seat.)
-  const seats = [...new Set(rows.map(r => r.constituency))];
-  const { error: delError } = await supabase
-    .from('mp_recommendations')
-    .delete()
-    .in('constituency', seats)
-    .eq('status', 'pending');
+  // Replace any existing pending draft for these (region, deputy) pairs, then
+  // insert the fresh batch. (There is a partial unique index allowing one pending
+  // row per (constituency, mp_name) — NOT per constituency alone, since a region
+  // can hold several deputies each with their own draft.) Deleted one pair at a
+  // time rather than a single `.in('constituency', …)` so a batch touching one
+  // deputy in a region never clears another deputy's still-pending draft there.
+  const pairs = [...new Map(rows.map(r => [`${r.constituency}\u0000${r.mp_name}`, r])).values()];
+  const delResults = await Promise.all(pairs.map(r =>
+    supabase.from('mp_recommendations')
+      .delete()
+      .eq('constituency', r.constituency)
+      .eq('mp_name', r.mp_name)
+      .eq('status', 'pending')
+  ));
+  const delError = delResults.find(res => res.error)?.error;
   if (delError) {
     console.error('ingest clear-pending error:', delError.message || delError);
     return json({ error: 'Failed to clear existing drafts' }, 500);

@@ -41,7 +41,7 @@ SELECT
   'agent-bulk-publish', NOW(), NULL
 FROM mp_recommendations
 WHERE status = 'pending'
-ON CONFLICT (constituency) DO UPDATE SET
+ON CONFLICT (constituency, mp_name) DO UPDATE SET
   mp_name           = EXCLUDED.mp_name,
   grade             = EXCLUDED.grade,
   bullets           = EXCLUDED.bullets,

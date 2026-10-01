@@ -1,6 +1,6 @@
 // functions/api/admin/login.js
 // POST /api/admin/login
-// Emails a one-time magic login link to the fixed ASVA address so the holder of
+// Emails a one-time magic login link to the fixed BBAI address so the holder of
 // that inbox can open the MP-rating review page (/goldenpath.html). The requester
 // supplies nothing — the destination is always adminEmail(env) — so this cannot
 // be used to send mail to arbitrary addresses.

@@ -1,6 +1,6 @@
 -- Run this once in the Supabase SQL editor (Dashboard → SQL Editor → New query).
 --
--- Backs the MP ASVA-rating agent (see docs/mp-rating-agent.md). Three tables:
+-- Backs the deputy BBAI-rating agent (see docs/mp-rating-agent.md). Three tables:
 --
 --   mp_ratings          The LIVE, confirmed rating for each current MP. This is
 --                       what the site build reads and overlays onto the scorecard.
@@ -11,18 +11,20 @@
 --                       discards it. Nothing here is ever shown on the public site.
 --
 --   admin_sessions      One-time magic-link tokens + activated review sessions for
---                       the /goldenpath.html review page. A link is emailed to the ASVA
+--                       the /goldenpath.html review page. A link is emailed to the BBAI
 --                       address; clicking it activates a session cookie.
 --
 -- Grades use the same rubric as the Candidates sheet: A, B, C, ?, DNR, D, E, F.
 
 
 -- ── Live confirmed ratings ────────────────────────────────────────────────────
--- Keyed by constituency name exactly as it appears in hex-layout.json / the
--- Candidates sheet, since there is one current MP per constituency. The build
--- (scripts/fetch-data.js) overlays these onto the current MP's scorecard card.
+-- Keyed by (constituency, mp_name) — NOT constituency alone. Unlike the original
+-- UK single-member-seat model (one MP per constituency), a region here can have
+-- several current deputies (party-list PR), each needing their own rating row.
+-- The build (scripts/fetch-data.js) overlays these onto the matching deputy's
+-- scorecard card.
 CREATE TABLE IF NOT EXISTS mp_ratings (
-  constituency TEXT        PRIMARY KEY,
+  constituency TEXT        NOT NULL,
   mp_name      TEXT        NOT NULL,
   grade        TEXT        NOT NULL,
   bullets      JSONB       NOT NULL DEFAULT '[]'::jsonb,  -- array of strings (≤5)
@@ -32,7 +34,8 @@ CREATE TABLE IF NOT EXISTS mp_ratings (
   -- Set by the both-campaign signatory-coverage pass (functions/api/ratings/
   -- signatory-fix.js) on each row it edits, so the review page can filter to
   -- exactly those cards. NULL on every other row. See supabase/signatory_fixed_at.sql.
-  signatory_fixed_at TIMESTAMPTZ
+  signatory_fixed_at TIMESTAMPTZ,
+  PRIMARY KEY (constituency, mp_name)
 );
 
 -- The site build reads this table with the ANON key, so allow public SELECT only.
@@ -66,10 +69,11 @@ CREATE TABLE IF NOT EXISTS mp_recommendations (
 CREATE INDEX IF NOT EXISTS mp_recommendations_status_idx
   ON mp_recommendations (status);
 
--- At most one PENDING recommendation per constituency, so re-running the research
--- skill refreshes rather than duplicates. Confirmed/rejected history is kept.
+-- At most one PENDING recommendation per (constituency, mp_name) — a region can
+-- have several current deputies, each with their own draft — so re-running the
+-- research skill refreshes rather than duplicates. Confirmed/rejected history is kept.
 CREATE UNIQUE INDEX IF NOT EXISTS mp_recommendations_one_pending_per_seat
-  ON mp_recommendations (constituency)
+  ON mp_recommendations (constituency, mp_name)
   WHERE status = 'pending';
 
 -- Only the Cloudflare Functions (service-role key) touch this table; no public
@@ -78,7 +82,7 @@ ALTER TABLE mp_recommendations ENABLE ROW LEVEL SECURITY;
 
 
 -- ── Admin magic-link sessions ─────────────────────────────────────────────────
--- login  → insert a row with a magic_token, emailed to the ASVA address.
+-- login  → insert a row with a magic_token, emailed to the BBAI address.
 -- verify → the emailed link activates the row and its session_token becomes the
 --          admin cookie until session_expires_at.
 CREATE TABLE IF NOT EXISTS admin_sessions (

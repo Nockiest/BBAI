@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ASVA - Golden Path</title>
+  <title>BBAI - Golden Path</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="turbo-cache-control" content="no-cache">
   <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
@@ -185,7 +185,7 @@
      nav theme, so it must render its own nav rather than persist one to/from the
      main site during Turbo navigation. -->
 <nav class="sitenav" id="sitenav">
-  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo_transparent.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="BBAI home"><img src="BBAI_Logo_transparent.png" alt="BBAI" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>BBAI</span>'"</a></div>
   <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
   <div class="sitenav-links" id="sitenavLinks">
     <a class="sitenav-welcome" href="index.html">Welcome</a>
@@ -291,7 +291,7 @@
     </div>
   </div>
 
-  <!-- Member Submissions: edits confirmed ASVA members suggested from the
+  <!-- Member Submissions: edits confirmed BBAI signatories suggested from the
        scorecard (functions/api/member-submissions/*). Distinct from the agent's
        own drafts (Pending review, above) — never shown publicly until Confirmed. -->
   <div id="membersView" hidden>
@@ -313,7 +313,7 @@
     <div id="membersList"></div>
     <div id="membersEmpty" class="admin-note" hidden>
       <p>No member submissions are waiting for review.</p>
-      <p class="muted">These appear when a confirmed ASVA member suggests an edit from a card on the scorecard.</p>
+      <p class="muted">These appear when a confirmed BBAI signatory suggests an edit from a card on the scorecard.</p>
     </div>
   </div>
 
@@ -384,10 +384,10 @@
     </div>
   </div>
 
-  <!-- Communications: preview of every email ASVA sends automatically -->
+  <!-- Communications: preview of every email BBAI sends automatically -->
   <div id="commsView" hidden>
     <div class="admin-note comms-intro">
-      <p>Every email ASVA sends automatically, plus the confirmation page people land on after clicking a link. Each preview is rendered from the live template or page with example details filled in, so what you see here is exactly what goes out.</p>
+      <p>Every email BBAI sends automatically, plus the confirmation page people land on after clicking a link. Each preview is rendered from the live template or page with example details filled in, so what you see here is exactly what goes out.</p>
       <p class="muted">To change one permanently, edit the file named under its HTML source (or paste the edited HTML to Claude). You can edit and preview here first without affecting anything live.</p>
     </div>
     <div class="comms-picker" id="commsPicker"></div>
@@ -396,13 +396,13 @@
 </div>
 
 <footer class="sitefooter">
-  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:kontakt@bbai.pauseai.cz">kontakt@bbai.pauseai.cz</a>
 </footer>
 
 <script src="editable-list.js"></script>
 <script>
 (function () {
-  var editableList = window.ASVAEditableList.editableList;
+  var editableList = window.BBAIEditableList.editableList;
   var GRADES = ['A', 'B', 'C', '?', 'DNR', 'D', 'E', 'F'];
   var cs = getComputedStyle(document.body);
   // The scorecard's grade-colour CSS vars are scoped to body.page-scorecard, so
@@ -691,7 +691,7 @@
     updatePendingCount();
   }
 
-  // ── Member Submissions: edits suggested by confirmed ASVA members ──────────
+  // ── Member Submissions: edits suggested by confirmed BBAI signatories ──────────
   // Distinct queue from the agent's Pending review drafts above — a member's
   // suggestion (functions/api/member-submissions/create.js) carries base_*
   // (a snapshot of the live rating when they submitted) alongside proposed_*
@@ -1063,7 +1063,12 @@
       .then(function (r) { return r.json(); })
       .then(function (data) {
         var map = (data && data.ratings) || {};
-        liveEntries = Object.keys(map).map(function (name) { return { cons: name, r: map[name] }; });
+        // Each region can hold several current deputies, so /api/ratings/list
+        // returns an ARRAY per region — flatten to one { cons, r } entry per deputy.
+        liveEntries = [];
+        Object.keys(map).forEach(function (name) {
+          (map[name] || []).forEach(function (r) { liveEntries.push({ cons: name, r: r }); });
+        });
         liveLoaded = true;
         rerenderLive();
       })

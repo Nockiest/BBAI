@@ -74,7 +74,7 @@ export async function onRequest(context) {
       updated_by:        'member-confirmed',
       updated_at:        now,
       human_reviewed_at: now,
-    }, { onConflict: 'constituency' });
+    }, { onConflict: 'constituency,mp_name' });
 
   if (upsertError) {
     console.error('member submission confirm upsert error:', upsertError.message || upsertError);

@@ -1,7 +1,7 @@
 -- Run this once in the Supabase SQL editor (Dashboard → SQL Editor → New query).
 --
 -- Backs the member-submitted MP-rating edit flow (see docs/mp-rating-agent.md,
--- "Member submissions"). A confirmed ASVA member can log in (via
+-- "Member submissions"). A confirmed BBAI signatory can log in (via
 -- member_login_sessions, see member_sessions.sql) and propose a grade +
 -- bullets + sources for their own MP's card. Nothing here is ever shown
 -- publicly, or even to other members — it is reviewed on /goldenpath.html
@@ -54,11 +54,14 @@ CREATE TABLE IF NOT EXISTS member_submissions (
 CREATE INDEX IF NOT EXISTS member_submissions_status_idx ON member_submissions (status);
 CREATE INDEX IF NOT EXISTS member_submissions_member_idx ON member_submissions (member_id);
 
--- A member resubmitting for a seat they already have a pending edit on
+-- A member resubmitting for a DEPUTY they already have a pending edit on
 -- replaces it in place (upsert), rather than piling up near-duplicates —
--- mirrors the existing "edit your pledge details" pattern in pledge.js.
+-- mirrors the existing "edit your pledge details" pattern in pledge.js. Scoped
+-- to (member_id, constituency, mp_name) — NOT (member_id, constituency) alone —
+-- since a region can hold several deputies and a member may want an in-flight
+-- submission open for more than one of them at once.
 CREATE UNIQUE INDEX IF NOT EXISTS member_submissions_one_pending_per_member_seat
-  ON member_submissions (member_id, constituency)
+  ON member_submissions (member_id, constituency, mp_name)
   WHERE status = 'pending';
 
 -- Only the Cloudflare Functions (service-role key) touch this table; no public

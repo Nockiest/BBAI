@@ -1,7 +1,8 @@
 // functions/api/current-ratings.js
 // GET /api/current-ratings
-// Public, read-only. Returns the confirmed ASVA ratings from Supabase mp_ratings,
-// keyed by constituency, so the scorecard and hex map can overlay them at runtime
+// Public, read-only. Returns the confirmed BBAI ratings from Supabase mp_ratings,
+// keyed by constituency (region) with one ARRAY entry per deputy — a region can
+// have several current deputies — so the scorecard can overlay them at runtime
 // without a rebuild. Grades are public information, so no auth is required.
 //
 // This is the runtime counterpart to the (optional) build-time overlay in
@@ -30,7 +31,7 @@ export async function onRequest(context) {
 
   const ratings = {};
   for (const r of data || []) {
-    ratings[r.constituency] = {
+    (ratings[r.constituency] ??= []).push({
       mp_name:    r.mp_name,
       grade:      r.grade,
       bullets:    Array.isArray(r.bullets) ? r.bullets : [],
@@ -39,7 +40,7 @@ export async function onRequest(context) {
       // Marker so the review page can filter to cards touched by the both-campaign
       // signatory-coverage pass. NULL/absent for every other rating.
       signatory_fixed_at: r.signatory_fixed_at || null,
-    };
+    });
   }
 
   // No caching: a confirmed or amended rating must surface immediately. The

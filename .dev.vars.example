@@ -32,9 +32,9 @@ AGENT_INGEST_SECRET=
 PARTNER_EXPORT_EMAILS=
 
 # Address the /goldenpath.html magic-link login is emailed to. Defaults to
-# contact@aisafetyvoteralliance.co.uk if unset. The login uses the SAME email
+# kontakt@bbai.pauseai.cz if unset. The login uses the SAME email
 # sender configured below (Gmail SMTP / Gmail API / Resend).
-ADMIN_EMAIL=contact@aisafetyvoteralliance.co.uk
+ADMIN_EMAIL=kontakt@bbai.pauseai.cz
 
 # Cloudflare Pages "Deploy Hook" URL for the "Redeploy site" button on
 # /goldenpath.html (POST /api/admin/redeploy triggers it, admin-session only).
@@ -66,7 +66,7 @@ SUPABASE_ANON_KEY=your-anon-key-here
 # OAuth, no expiry — just a Google Account "App Password" (needs 2-Step
 # Verification turned on first). ~5 minute setup:
 #   docs/gmail-confirmation-setup.md
-GMAIL_USER=contact@aisafetyvoteralliance.co.uk
+GMAIL_USER=kontakt@bbai.pauseai.cz
 GMAIL_APP_PASSWORD=
 
 # --- Option 2: Gmail API via OAuth (advanced, has a 7-day-token caveat) ---
@@ -78,12 +78,12 @@ GMAIL_APP_PASSWORD=
 GMAIL_CLIENT_ID=
 GMAIL_CLIENT_SECRET=
 GMAIL_REFRESH_TOKEN=
-GMAIL_FROM_ADDRESS=contact@aisafetyvoteralliance.co.uk
+GMAIL_FROM_ADDRESS=kontakt@bbai.pauseai.cz
 
 # --- Option 3: Resend (needs a verified domain, not a Gmail address) ---
 RESEND_API_KEY=
-# From address — must be on your verified Resend domain, e.g. "ASVA <noreply@yourdomain.org>".
+# From address — must be on your verified Resend domain, e.g. "BBAI <noreply@yourdomain.org>".
 # The onboarding@resend.dev default works for testing but only delivers to your
 # own Resend account email.
-EMAIL_FROM=ASVA <onboarding@resend.dev>
+EMAIL_FROM=BBAI <onboarding@resend.dev>
 

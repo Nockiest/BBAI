@@ -5,7 +5,7 @@
 // suggesting or reviewing a rating edit is the same interaction everywhere on
 // the site. Plain global script (not a module) so either page can drop it in
 // with a single <script src="editable-list.js"></script> before its own inline
-// script. Exposes window.ASVAEditableList = { editableList }.
+// script. Exposes window.BBAIEditableList = { editableList }.
 //
 // Markup/behaviour and CSS classes (.edit-list, .edit-item, .drag-handle, …)
 // are shared too — see the "Editable, reorderable bullet / source lists"
@@ -186,5 +186,5 @@
     return wrap;
   }
 
-  window.ASVAEditableList = { editableList: editableList };
+  window.BBAIEditableList = { editableList: editableList };
 })();

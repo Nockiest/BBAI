@@ -1,7 +1,9 @@
 // functions/api/ratings/add-sources.js
 // POST /api/ratings/add-sources[?dryRun=1&limit=N]
 // Authorization: Bearer <AGENT_INGEST_SECRET>
-// Body: { additions: [ { constituency, source: { title, url } } , ... ] }
+// Body: { additions: [ { constituency, mp_name, source: { title, url } } , ... ] }
+// mp_name is required: mp_ratings is keyed (constituency, mp_name), and a region
+// can hold several deputies, so a constituency alone no longer identifies a row.
 //
 // Appends a single provided source to a LIVE confirmed rating (mp_ratings) — used
 // to give every card a baseline record link (e.g. the MP's parliament.uk profile)
@@ -43,32 +45,34 @@ export async function onRequest(context) {
   // One read of the whole table, then targeted updates (keeps subrequests down).
   const { data: rows, error } = await supabase
     .from('mp_ratings')
-    .select('constituency, grade, sources');
+    .select('constituency, mp_name, grade, sources');
   if (error) {
     console.error('add-sources load error:', error.message || error);
     return json({ error: 'Failed to load ratings' }, 500);
   }
-  const byCons = new Map((rows || []).map(r => [r.constituency, r]));
+  const byKey = new Map((rows || []).map(r => [`${r.constituency}\u0000${r.mp_name}`, r]));
 
   const hostOf = (u) => { try { return new URL(String(u)).hostname; } catch { return ''; } };
   const changes = [], skipped = [], capped = [];
   let updated = 0, failed = 0;
 
   for (const a of additions) {
-    const cons = String(a?.constituency ?? '').trim();
-    const src  = a?.source || {};
-    const surl = String(src.url ?? '').trim();
-    const row  = byCons.get(cons);
-    if (!cons || !surl || !row) { skipped.push({ constituency: cons || '(missing)', reason: 'no matching rating' }); continue; }
-    if (row.grade !== '?') { skipped.push({ constituency: cons, reason: `grade ${row.grade}, not ?` }); continue; }
+    const cons   = String(a?.constituency ?? '').trim();
+    const mpName = String(a?.mp_name ?? '').trim();
+    const src    = a?.source || {};
+    const surl   = String(src.url ?? '').trim();
+    const label  = `${cons || '(missing)'} / ${mpName || '(missing)'}`;
+    const row    = byKey.get(`${cons}\u0000${mpName}`);
+    if (!cons || !mpName || !surl || !row) { skipped.push({ constituency: label, reason: 'no matching rating' }); continue; }
+    if (row.grade !== '?') { skipped.push({ constituency: label, reason: `grade ${row.grade}, not ?` }); continue; }
 
     const existing = Array.isArray(row.sources) ? row.sources : [];
-    if (existing.some(s => hostOf(s?.url) === hostOf(surl))) { skipped.push({ constituency: cons, reason: 'host already cited' }); continue; }
-    if (existing.length >= 6) { capped.push({ constituency: cons }); continue; }
+    if (existing.some(s => hostOf(s?.url) === hostOf(surl))) { skipped.push({ constituency: label, reason: 'host already cited' }); continue; }
+    if (existing.length >= 6) { capped.push({ constituency: label }); continue; }
 
     // Record source goes first, so it reads as the card's "who/what" anchor.
     const nextSources = sanitizeSources([{ title: src.title, url: surl }, ...existing]);
-    changes.push({ constituency: cons, added: surl });
+    changes.push({ constituency: label, added: surl });
     if (dryRun) continue;
     if (limit > 0 && updated >= limit) continue;
 
@@ -76,8 +80,9 @@ export async function onRequest(context) {
       .from('mp_ratings')
       .update({ sources: nextSources, updated_by: 'record-source', updated_at: new Date().toISOString() })
       .eq('constituency', cons)
+      .eq('mp_name', mpName)
       .eq('grade', '?');   // guard: never edit a row that changed grade meanwhile
-    if (upErr) { console.error(`add-sources ${cons}:`, upErr.message || upErr); failed++; }
+    if (upErr) { console.error(`add-sources ${label}:`, upErr.message || upErr); failed++; }
     else updated++;
   }
 
