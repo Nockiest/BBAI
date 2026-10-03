@@ -43,8 +43,13 @@ function loadDevVars() {
 }
 loadDevVars();
 
-const CANDIDATES_URL    = process.env.GOOGLE_SHEET_CANDIDATES_URL;
-const CONSTITUENCIES_URL = process.env.GOOGLE_SHEET_CONSTITUENCIES_URL;
+const DEFAULT_CANDIDATES_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTj9Tk-2EIvNLAxJ0Dn83ihKSKeY5mAvViG28nzUgMrdl-LcCmoFm5aRQMLUfCaWQ_SD7Hz2kj6SwGO/pub?gid=1953138176&single=true&output=csv';
+const DEFAULT_CONSTITUENCIES_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTj9Tk-2EIvNLAxJ0Dn83ihKSKeY5mAvViG28nzUgMrdl-LcCmoFm5aRQMLUfCaWQ_SD7Hz2kj6SwGO/pub?gid=1447887535&single=true&output=csv';
+
+const CANDIDATES_URL     = process.env.GOOGLE_SHEET_CANDIDATES_URL     || DEFAULT_CANDIDATES_URL;
+const CONSTITUENCIES_URL = process.env.GOOGLE_SHEET_CONSTITUENCIES_URL || DEFAULT_CONSTITUENCIES_URL;
 
 if (!CANDIDATES_URL || !CONSTITUENCIES_URL) {
   console.error(

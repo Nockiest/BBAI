@@ -117,16 +117,16 @@ cells = grid(S);
 // Candidates: inside cells + outside cells within ~one hex of the border.
 const cand = cells.filter(c => c.in || Math.min(...regions.map(reg => distToRings(c.pt, reg.rings))) < S * 1.2);
 
-// ── Cost matrix: slot (one per seat) × candidate cell ──────────────────────────
-const OUTSIDE_PENALTY = 4;      // in hex-size² units; keeps the outline faithful
-const CENTRE_WEIGHT   = 0.06;   // mild pull towards each region's centre
+// ── Cost: how badly a candidate cell fits region R ─────────────────────────────
+// d = distance from R's real boundary (0 inside R), cd = distance from R's centre,
+// both in hex sizes. See solve() for how they are weighted.
 const slotRegion = [];
 seats.forEach((n, ri) => { for (let k = 0; k < n; k++) slotRegion.push(ri); });
-const cost = regions.map(reg => cand.map(c => {
-  const d = regionDist(c.pt, reg) / S;
-  const cd = Math.hypot(c.pt[0] - reg.centroid[0], c.pt[1] - reg.centroid[1]) / S;
-  return d * d + CENTRE_WEIGHT * cd * cd + (c.in ? 0 : OUTSIDE_PENALTY);
-}));
+const baseCost = regions.map(reg => cand.map(c => ({
+  d:   regionDist(c.pt, reg) / S,
+  cd:  Math.hypot(c.pt[0] - reg.centroid[0], c.pt[1] - reg.centroid[1]) / S,
+  out: !c.in,
+})));
 
 // Hungarian algorithm, n rows ≤ m columns (e-maxx formulation, 1-indexed).
 function hungarian(n, m, a) {
@@ -159,31 +159,56 @@ function hungarian(n, m, a) {
   return rowToCol;
 }
 
-const assign = hungarian(slotRegion.length, cand.length, (i, j) => cost[slotRegion[i]][j]);
-
-// ── Output ─────────────────────────────────────────────────────────────────────
-const out = {};
-regions.forEach(r => { out[r.name] = []; });
-assign.forEach((j, i) => out[regions[slotRegion[i]].name].push([cand[j].q, cand[j].r]));
-// Reading order (north→south, west→east) so the front end fills hexes predictably.
-for (const k of Object.keys(out)) out[k].sort((a, b) => a[1] - b[1] || (a[0] + a[1] / 2) - (b[0] + b[1] / 2));
-
-// Report regions that ended up split into more than one piece.
+// ── Solve ──────────────────────────────────────────────────────────────────────
 const NB = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
-for (const [name, list] of Object.entries(out)) {
-  if (!list.length) continue;
-  const set = new Set(list.map(c => c.join(',')));
-  const seen = new Set([list[0].join(',')]);
-  const stack = [list[0]];
-  while (stack.length) {
-    const [q, r] = stack.pop();
-    for (const [dq, dr] of NB) {
-      const key = `${q + dq},${r + dr}`;
-      if (set.has(key) && !seen.has(key)) { seen.add(key); stack.push([q + dq, r + dr]); }
+
+// Names of regions whose cells form more than one connected piece.
+function splitRegions(out) {
+  const split = [];
+  for (const [name, list] of Object.entries(out)) {
+    if (!list.length) continue;
+    const set = new Set(list.map(c => c.join(',')));
+    const seen = new Set([list[0].join(',')]);
+    const stack = [list[0]];
+    while (stack.length) {
+      const [q, r] = stack.pop();
+      for (const [dq, dr] of NB) {
+        const key = `${q + dq},${r + dr}`;
+        if (set.has(key) && !seen.has(key)) { seen.add(key); stack.push([q + dq, r + dr]); }
+      }
     }
+    if (seen.size !== set.size) split.push(name);
   }
-  if (seen.size !== set.size) console.warn(`hex layout: "${name}" is split into several pieces`);
+  return split;
 }
+
+// centreWeight: mild pull towards each region's centre (keeps regions compact).
+// outsidePenalty: cost of using a cell outside the border (keeps the outline
+// faithful), in hex-size² units.
+function solve(centreWeight, outsidePenalty) {
+  const cost = baseCost.map(row => row.map(x =>
+    x.d * x.d + centreWeight * x.cd * x.cd + (x.out ? outsidePenalty : 0)));
+  const assign = hungarian(slotRegion.length, cand.length, (i, j) => cost[slotRegion[i]][j]);
+  const out = {};
+  regions.forEach(r => { out[r.name] = []; });
+  assign.forEach((j, i) => out[regions[slotRegion[i]].name].push([cand[j].q, cand[j].r]));
+  // Reading order (north→south, west→east) so the front end fills hexes predictably.
+  for (const k of Object.keys(out)) out[k].sort((a, b) => a[1] - b[1] || (a[0] + a[1] / 2) - (b[0] + b[1] / 2));
+  return { out, split: splitRegions(out) };
+}
+
+// Which settings keep every region in one piece depends on the exact seat
+// counts, so try a few (most faithful first) and keep the first clean result —
+// or, if none is clean, the one with the fewest split regions.
+const SETTINGS = [[0.06, 4], [0.06, 8], [0.08, 2], [0.1, 8], [0.04, 4], [0.12, 2], [0.05, 8], [0.1, 2]];
+let best = null;
+for (const [w, p] of SETTINGS) {
+  const res = solve(w, p);
+  if (!best || res.split.length < best.split.length) best = res;
+  if (!res.split.length) break;
+}
+const out = best.out;
+for (const name of best.split) console.warn(`hex layout: "${name}" is split into several pieces`);
 
 writeFileSync('hex-layout.json', JSON.stringify({ regions: out }));
 console.log(`hex-layout.json written: ${N} hexes across ${regions.filter((_, i) => seats[i]).length} regions`);
