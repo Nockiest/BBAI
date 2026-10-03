@@ -1,6 +1,5 @@
+# Site is still in setup (placeholder grades/logos) — kept out of search
+# entirely for now. See _headers for the authoritative X-Robots-Tag; this file
+# additionally stops crawling. Reopen both once ready to be public.
 User-agent: *
-Allow: /
-Disallow: /goldenpath
-Disallow: /api/
-
-Sitemap: https://bbai.pauseai.cz/sitemap.xml
+Disallow: /

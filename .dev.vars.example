@@ -56,20 +56,31 @@ SUPABASE_ANON_KEY=your-anon-key-here
 # Setup order matters:
 #   1) Run supabase/email_confirmation.sql in the Supabase SQL editor
 #   2) Set up ONE sender backend below. They're tried in order (Option 1 ->
-#      2 -> 3), falling through if a backend errors, so it's fine to leave
+#      2 -> 3 -> 4), falling through if a backend errors, so it's fine to leave
 #      more than one configured.
 # While none are configured, confirmation emails are disabled and signups
 # are stored as confirmed immediately (the original behaviour).
 
-# --- Option 1 (recommended): Gmail SMTP + App Password ---
-# Sends genuinely from your @gmail.com address. No Google Cloud project, no
-# OAuth, no expiry — just a Google Account "App Password" (needs 2-Step
-# Verification turned on first). ~5 minute setup:
+# --- Option 1: Gmail SMTP + App Password ---
+# Sends genuinely from a @gmail.com (or Google Workspace) address. No Google
+# Cloud project, no OAuth, no expiry — just a Google Account "App Password"
+# (needs 2-Step Verification turned on first). ~5 minute setup:
 #   docs/gmail-confirmation-setup.md
-GMAIL_USER=kontakt@bbai.pauseai.cz
+# NOTE: this must be a real Gmail/Google Workspace mailbox — it will NOT work
+# for an address hosted elsewhere (e.g. Seznam). Use Option 2 below for that.
+GMAIL_USER=your-address@gmail.com
 GMAIL_APP_PASSWORD=
 
-# --- Option 2: Gmail API via OAuth (advanced, has a 7-day-token caveat) ---
+# --- Option 2 (recommended for a Seznam-hosted domain): Seznam SMTP + password ---
+# Sends genuinely from your @seznam.cz (or custom-domain Seznam) address via
+# smtp.seznam.cz. SEZNAM_APP_PASSWORD is either the account's normal password,
+# or an app-specific password if 2-step verification is enabled on the Seznam ID
+# (Nastavení účtu -> Zabezpečení -> Aplikační hesla) — required once 2FA is on,
+# same as Google.
+SEZNAM_USER=kontakt@bbai.pauseai.cz
+SEZNAM_APP_PASSWORD=
+
+# --- Option 3: Gmail API via OAuth (advanced, has a 7-day-token caveat) ---
 # Also sends genuinely from your @gmail.com address, but the refresh token
 # expires exactly 7 days after you generate it unless you complete Google's
 # full app-verification review — prefer Option 1 unless you have a specific
@@ -78,9 +89,9 @@ GMAIL_APP_PASSWORD=
 GMAIL_CLIENT_ID=
 GMAIL_CLIENT_SECRET=
 GMAIL_REFRESH_TOKEN=
-GMAIL_FROM_ADDRESS=kontakt@bbai.pauseai.cz
+GMAIL_FROM_ADDRESS=your-address@gmail.com
 
-# --- Option 3: Resend (needs a verified domain, not a Gmail address) ---
+# --- Option 4: Resend (needs a verified domain, not a Gmail/Seznam address) ---
 RESEND_API_KEY=
 # From address — must be on your verified Resend domain, e.g. "BBAI <noreply@yourdomain.org>".
 # The onboarding@resend.dev default works for testing but only delivers to your

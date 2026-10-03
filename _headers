@@ -33,12 +33,17 @@
 #   * Permissions-Policy — deny powerful browser features the site never uses.
 #   * Strict-Transport-Security — force HTTPS for a year (no preload, to keep
 #     it reversible). Cloudflare serves this site over HTTPS on a fixed domain.
+#   * X-Robots-Tag: noindex, nofollow — keeps the site out of search results
+#     while it's still in setup (test grades, placeholder logos, etc). This is
+#     the authoritative signal (an HTTP header, not just robots.txt advice) —
+#     remove this line once the site is ready to be publicly searchable.
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Robots-Tag: noindex, nofollow
 
 /*.html
   Cache-Control: public, max-age=0, must-revalidate

@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-UT3wNQ/checked-fetch.js
+// .wrangler/tmp/bundle-IK0QiH/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -27,7 +27,7 @@ globalThis.fetch = new Proxy(globalThis.fetch, {
   }
 });
 
-// .wrangler/tmp/pages-fmDBwX/functionsWorker-0.8166019470734963.mjs
+// .wrangler/tmp/pages-4BuiDs/functionsWorker-0.8068892118198858.mjs
 var __defProp2 = Object.defineProperty;
 var __name2 = /* @__PURE__ */ __name((target, value) => __defProp2(target, "name", { value, configurable: true }), "__name");
 var urls2 = /* @__PURE__ */ new Set();
@@ -20649,7 +20649,7 @@ async function readSmtpResponse(lineReader) {
 }
 __name(readSmtpResponse, "readSmtpResponse");
 __name2(readSmtpResponse, "readSmtpResponse");
-async function sendViaGmailSMTP(gmailUser, appPassword, to, subject, html) {
+async function sendViaSMTP(host, port, user, password, to, subject, html, label) {
   let connect;
   try {
     ({ connect } = await import("cloudflare:sockets"));
@@ -20661,7 +20661,7 @@ async function sendViaGmailSMTP(gmailUser, appPassword, to, subject, html) {
   const safeSubject = String(subject).replace(/[\r\n]/g, "");
   const encodedSubject = `=?UTF-8?B?${base64EncodeUTF8(safeSubject)}?=`;
   const message = smtpDotStuff([
-    `From: BBAI <${gmailUser}>`,
+    `From: BBAI <${user}>`,
     `To: ${safeTo}`,
     `Subject: ${encodedSubject}`,
     "MIME-Version: 1.0",
@@ -20678,26 +20678,26 @@ async function sendViaGmailSMTP(gmailUser, appPassword, to, subject, html) {
   try {
     await withTimeout((async () => {
       socket = connect(
-        { hostname: "smtp.gmail.com", port: 465 },
+        { hostname: host, port },
         { secureTransport: "on", allowHalfOpen: false }
       );
       lineReader = makeLineReader(socket.readable);
       lineWriter = makeLineWriter(socket.writable);
       let res = await readSmtpResponse(lineReader);
       if (res.code !== 220) throw new Error("No greeting from SMTP server: " + res.text);
-      await lineWriter.writeLine("EHLO asva-scorecard.pages.dev");
+      await lineWriter.writeLine("EHLO bbai.pauseai.cz");
       res = await readSmtpResponse(lineReader);
       if (res.code !== 250) throw new Error("EHLO rejected: " + res.text);
       await lineWriter.writeLine("AUTH LOGIN");
       res = await readSmtpResponse(lineReader);
       if (res.code !== 334) throw new Error("AUTH LOGIN not accepted: " + res.text);
-      await lineWriter.writeLine(base64EncodeUTF8(gmailUser));
+      await lineWriter.writeLine(base64EncodeUTF8(user));
       res = await readSmtpResponse(lineReader);
       if (res.code !== 334) throw new Error("Username rejected: " + res.text);
-      await lineWriter.writeLine(base64EncodeUTF8(appPassword));
+      await lineWriter.writeLine(base64EncodeUTF8(password));
       res = await readSmtpResponse(lineReader);
-      if (res.code !== 235) throw new Error("Authentication failed \u2014 check the App Password: " + res.text);
-      await lineWriter.writeLine(`MAIL FROM:<${gmailUser}>`);
+      if (res.code !== 235) throw new Error("Authentication failed \u2014 check the app password: " + res.text);
+      await lineWriter.writeLine(`MAIL FROM:<${user}>`);
       res = await readSmtpResponse(lineReader);
       if (res.code !== 250) throw new Error("MAIL FROM rejected: " + res.text);
       await lineWriter.writeLine(`RCPT TO:<${safeTo}>`);
@@ -20713,7 +20713,7 @@ async function sendViaGmailSMTP(gmailUser, appPassword, to, subject, html) {
     })());
     return true;
   } catch (e) {
-    console.error("Gmail SMTP send failed:", e.message || e);
+    console.error(`${label} SMTP send failed:`, e.message || e);
     return false;
   } finally {
     try {
@@ -20730,8 +20730,18 @@ async function sendViaGmailSMTP(gmailUser, appPassword, to, subject, html) {
     }
   }
 }
+__name(sendViaSMTP, "sendViaSMTP");
+__name2(sendViaSMTP, "sendViaSMTP");
+function sendViaGmailSMTP(gmailUser, appPassword, to, subject, html) {
+  return sendViaSMTP("smtp.gmail.com", 465, gmailUser, appPassword, to, subject, html, "Gmail");
+}
 __name(sendViaGmailSMTP, "sendViaGmailSMTP");
 __name2(sendViaGmailSMTP, "sendViaGmailSMTP");
+function sendViaSeznamSMTP(seznamUser, appPassword, to, subject, html) {
+  return sendViaSMTP("smtp.seznam.cz", 465, seznamUser, appPassword, to, subject, html, "Seznam");
+}
+__name(sendViaSeznamSMTP, "sendViaSeznamSMTP");
+__name2(sendViaSeznamSMTP, "sendViaSeznamSMTP");
 async function getGmailAccessToken(clientId, clientSecret, refreshToken) {
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -20818,6 +20828,13 @@ async function sendEmail(env, to, subject, html) {
     if (ok3) return true;
     console.error("Gmail SMTP send failed \u2014 trying next configured backend");
   }
+  const seznamUser = (env.SEZNAM_USER || "").trim();
+  const seznamAppPassword = (env.SEZNAM_APP_PASSWORD || "").trim();
+  if (seznamUser && seznamAppPassword) {
+    const ok3 = await sendViaSeznamSMTP(seznamUser, seznamAppPassword, to, subject, html);
+    if (ok3) return true;
+    console.error("Seznam SMTP send failed \u2014 trying next configured backend");
+  }
   const gmailClientId = (env.GMAIL_CLIENT_ID || "").trim();
   const gmailClientSecret = (env.GMAIL_CLIENT_SECRET || "").trim();
   const gmailRefreshToken = (env.GMAIL_REFRESH_TOKEN || "").trim();
@@ -20839,17 +20856,23 @@ __name2(sendEmail, "sendEmail");
 function confirmationEnabled(env) {
   const hasGmailUser = !!(env.GMAIL_USER || "").trim();
   const hasGmailAppPass = !!(env.GMAIL_APP_PASSWORD || "").trim();
-  const hasSmtp = hasGmailUser && hasGmailAppPass;
+  const hasGmailSmtp = hasGmailUser && hasGmailAppPass;
+  const hasSeznamUser = !!(env.SEZNAM_USER || "").trim();
+  const hasSeznamAppPass = !!(env.SEZNAM_APP_PASSWORD || "").trim();
+  const hasSeznamSmtp = hasSeznamUser && hasSeznamAppPass;
   const hasGmailApi = !!((env.GMAIL_CLIENT_ID || "").trim() && (env.GMAIL_CLIENT_SECRET || "").trim() && (env.GMAIL_REFRESH_TOKEN || "").trim() && (env.GMAIL_FROM_ADDRESS || "").trim());
   const hasResend = !!(env.RESEND_API_KEY || "").trim();
   console.log("email sender check:", {
     GMAIL_USER: hasGmailUser,
     GMAIL_APP_PASSWORD: hasGmailAppPass,
-    hasSmtp,
+    hasGmailSmtp,
+    SEZNAM_USER: hasSeznamUser,
+    SEZNAM_APP_PASSWORD: hasSeznamAppPass,
+    hasSeznamSmtp,
     hasGmailApi,
     hasResend
   });
-  return hasSmtp || hasGmailApi || hasResend;
+  return hasGmailSmtp || hasSeznamSmtp || hasGmailApi || hasResend;
 }
 __name(confirmationEnabled, "confirmationEnabled");
 __name2(confirmationEnabled, "confirmationEnabled");
@@ -24179,7 +24202,7 @@ var jsonError2 = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx
 }, "jsonError");
 var middleware_miniflare3_json_error_default2 = jsonError2;
 
-// .wrangler/tmp/bundle-UT3wNQ/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-IK0QiH/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__2 = [
   middleware_ensure_req_body_drained_default2,
   middleware_miniflare3_json_error_default2
@@ -24211,7 +24234,7 @@ function __facade_invoke__2(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__2, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-UT3wNQ/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-IK0QiH/middleware-loader.entry.ts
 var __Facade_ScheduledController__2 = class ___Facade_ScheduledController__2 {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
@@ -24311,4 +24334,4 @@ export {
   __INTERNAL_WRANGLER_MIDDLEWARE__2 as __INTERNAL_WRANGLER_MIDDLEWARE__,
   middleware_loader_entry_default2 as default
 };
-//# sourceMappingURL=functionsWorker-0.8166019470734963.js.map
+//# sourceMappingURL=functionsWorker-0.8068892118198858.js.map
