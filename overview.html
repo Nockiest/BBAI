@@ -30,12 +30,17 @@
   <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
   <script type="module" src="turbo.js"></script>
   <style>
-    /* Region-list layout. There is no geographic map in this version (see
-       SETUP.md step 3 — shipped as a simple list rather than redrawing the
-       hand-tuned UK hex geometry for Czech regions), so this replaces what
-       used to be an SVG hex grid. */
-    .region-layout{ display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; }
-    .region-list{ flex:1 1 480px; min-width:0; display:flex; flex-direction:column; gap:14px; }
+    /* Hex map: one hex per sitting deputy, grouped by region in the shape of
+       Czechia. The geometry comes from hex-layout.json, generated at build time
+       by scripts/build-hex-layout.js. Base #hex-svg / .map-* styles live in app.css. */
+    #hex-svg .region-borders{ fill:none; stroke:#1a1a2e; stroke-width:1.6; stroke-linecap:round; pointer-events:none; }
+    #hex-svg polygon.selected{ stroke:#1a1a2e; stroke-width:2.2; }
+    .map-credit{ font-size:0.7rem; color:var(--muted); text-align:right; padding:0 12px 8px; }
+    .map-credit a{ color:inherit; }
+    .regions-heading{ margin:32px 0 14px; font-size:1.3rem; }
+
+    /* Region list below the map (also the text alternative to the map). */
+    .region-list{ display:flex; flex-direction:column; gap:14px; }
     .region-card{ background:#fff; border:1px solid var(--line, #ddd); border-radius:14px; padding:16px 18px; box-shadow:0 4px 14px rgba(0,0,0,.05); }
     .region-card.dimmed{ opacity:.35; }
     .region-card.highlighted{ outline:2px solid #2f6fd0; }
@@ -49,7 +54,6 @@
     .deputy-row .dep-party{ color:var(--muted); font-weight:400; font-size:0.85rem; margin-left:6px; }
     .no-deputy{ color:var(--muted); font-style:italic; font-size:0.88rem; }
     .region-card .scorecard-link{ display:inline-block; margin-top:12px; }
-    @media (max-width: 700px){ .region-layout{ flex-direction:column; } }
   </style>
 </head>
 <body class="page-map">
@@ -120,18 +124,31 @@
         <div id="map-search-dropdown"></div>
       </div>
     </div>
+    <div class="map-info-mobile" id="map-info-mobile">
+      <div class="info-body"></div>
+      <a class="scorecard-link" href="scorecard.html">Zobrazit hodnocení kraje →</a>
+    </div>
   </div>
 
-  <div class="region-layout">
-    <div class="region-list" id="region-list">
+  <div class="map-layout">
+    <div class="map-container">
       <div class="status-msg" id="map-status">Načítání dat…</div>
+      <svg id="hex-svg" role="img" aria-label="Mapa Česka: jeden šestiúhelník za každého poslance, obarvený podle hodnocení"></svg>
+      <div class="map-credit">Hranice krajů: <a href="https://github.com/siwekm/czech-geojson" target="_blank" rel="noopener">czech-geojson</a> (CC BY 4.0)</div>
     </div>
 
     <div class="info-panel">
-      <div class="legend" id="legend"></div>
+      <div class="info-card" id="info-card">
+        <div class="placeholder">Najeďte myší na šestiúhelník nebo na něj klikněte a zobrazí se podrobnosti o poslanci.</div>
+      </div>
+      <div class="legend" id="legend" style="margin-top:14px"></div>
     </div>
   </div>
+
+  <h2 class="regions-heading">Kraje a poslanci</h2>
+  <div class="region-list" id="region-list"></div>
 </div>
+<div id="tooltip"></div>
 
 <script>
 (function(){
@@ -176,6 +193,8 @@ let latestRegion = null; // region of the most recent signup
 let view         = 'grade';
 let maxMembers   = 0;
 let searchQuery  = '';
+let hexLayout    = {};   // region name → [[q, r], …], from hex-layout.json
+let selectedKey  = null; // "region|deputy name" of the clicked hex
 
 function stripHonorifics(s) {
   return (s || '')
@@ -213,8 +232,9 @@ function bestGrade(deps) {
 // ── Load data.json + live member counts ───────────────────────────
 async function init() {
   try {
-    const [dataRes, countsRes, ratingsRes, latestRes] = await Promise.all([
+    const [dataRes, layoutRes, countsRes, ratingsRes, latestRes] = await Promise.all([
       fetch('/data.json'),
+      fetch('/hex-layout.json').catch(() => null),
       fetch('/api/member-counts').catch(() => null),
       fetch('/api/current-ratings', { cache: 'no-store' }).catch(() => null),
       fetch('/api/latest-member', { cache: 'no-store' }).catch(() => null),
@@ -224,6 +244,11 @@ async function init() {
     const data = await dataRes.json();
     regions      = data.constituencies || [];
     candidatesDB = data.candidates || {};
+
+    if (layoutRes && layoutRes.ok) {
+      try { hexLayout = (await layoutRes.json()).regions || {}; }
+      catch (e) { console.warn('hex-layout parse error:', e); }
+    }
 
     if (ratingsRes && ratingsRes.ok) {
       try { ({ ratings: ratingsMap } = await ratingsRes.json()); ratingsMap = ratingsMap || {}; }
@@ -267,8 +292,144 @@ function matchesSearch(regionName, q) {
     stripHonorifics(d.name || '').toLowerCase().includes(q));
 }
 
+// ── Hex map ───────────────────────────────────────────────────────
+// Pointy-top hexes in axial (q, r) coordinates, matching scripts/build-hex-layout.js.
+const HEX_R = 10;
+const SQRT3 = Math.sqrt(3);
+const hexCentre = (q, r) => [HEX_R * SQRT3 * (q + r / 2), HEX_R * 1.5 * r];
+const hexCorner = (cx, cy, i) => {
+  const a = Math.PI / 180 * (60 * i - 30);
+  return [cx + HEX_R * Math.cos(a), cy + HEX_R * Math.sin(a)];
+};
+// Neighbour offsets and the two corners of the edge shared with each neighbour.
+const HEX_NB = [[1, 0, 0, 1], [1, -1, 5, 0], [0, -1, 4, 5], [-1, 0, 3, 4], [-1, 1, 2, 3], [0, 1, 1, 2]];
+
+const memberColour = n => {
+  if (!n) return '#e0e0e0';
+  const t = Math.sqrt(n / maxMembers);  // sqrt so a few signatures still show
+  const mix = (a, b) => Math.round(a + (b - a) * t);
+  return `rgb(${mix(200, 21)},${mix(214, 52)},${mix(245, 128)})`;
+};
+
+// One entry per hex: the region's deputies (stable order: party, then name)
+// dealt into that region's cells in reading order.
+function mapCells() {
+  const cells = [];
+  for (const region of regions) {
+    const slots = hexLayout[region.name] || [];
+    const deps = currentDeputies(region.name).slice().sort((a, b) =>
+      (a.party || '').localeCompare(b.party || '', 'cs') || (a.name || '').localeCompare(b.name || '', 'cs'));
+    if (deps.length > slots.length) {
+      console.warn(`hex map: ${region.name} has ${deps.length} deputies but ${slots.length} hexes — rebuild hex-layout.json`);
+    }
+    deps.slice(0, slots.length).forEach((d, i) =>
+      cells.push({ region: region.name, dep: d, q: slots[i][0], r: slots[i][1] }));
+  }
+  return cells;
+}
+
+function depMatches(d, q) {
+  return (d.name || '').toLowerCase().includes(q) || stripHonorifics(d.name || '').toLowerCase().includes(q);
+}
+
+function renderMap() {
+  const svg = document.getElementById('hex-svg');
+  const cells = mapCells();
+  if (!cells.length) { svg.style.display = 'none'; return; }
+  svg.style.display = '';
+
+  const regionAt = new Map(cells.map(c => [`${c.q},${c.r}`, c.region]));
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  let polys = '', borders = '';
+
+  for (const c of cells) {
+    const [cx, cy] = hexCentre(c.q, c.r);
+    minX = Math.min(minX, cx); maxX = Math.max(maxX, cx);
+    minY = Math.min(minY, cy); maxY = Math.max(maxY, cy);
+    const corners = [0, 1, 2, 3, 4, 5].map(i => hexCorner(cx, cy, i));
+
+    const g = (c.dep.grade || '?').toUpperCase();
+    const fill = view === 'grade' ? gradeColour(g) : memberColour(memberCounts[c.region] || 0);
+    const key = `${c.region}|${c.dep.name}`;
+    let cls = '';
+    if (searchQuery) {
+      cls = (c.region.toLowerCase().includes(searchQuery) || depMatches(c.dep, searchQuery)) ? 'highlighted' : 'dimmed';
+    }
+    if (key === selectedKey) cls += ' selected';
+    if (view === 'grade' && colourblind && cbBlueYellow && g !== '?') cls += ' cb-grade-outline';
+    polys += `<polygon points="${corners.map(p => p[0].toFixed(2) + ',' + p[1].toFixed(2)).join(' ')}"` +
+             ` fill="${fill}" class="${cls.trim()}" data-key="${escHTML(key)}"/>`;
+
+    // Thick line wherever the neighbour belongs to another region (or is empty).
+    for (const [dq, dr, i, j] of HEX_NB) {
+      if (regionAt.get(`${c.q + dq},${c.r + dr}`) === c.region) continue;
+      const [x1, y1] = corners[i], [x2, y2] = corners[j];
+      borders += `M${x1.toFixed(2)},${y1.toFixed(2)}L${x2.toFixed(2)},${y2.toFixed(2)}`;
+    }
+  }
+
+  const pad = HEX_R * 1.5;
+  svg.setAttribute('viewBox', `${(minX - pad).toFixed(1)} ${(minY - pad).toFixed(1)} ${(maxX - minX + 2 * pad).toFixed(1)} ${(maxY - minY + 2 * pad).toFixed(1)}`);
+  svg.innerHTML = polys + `<path class="region-borders" d="${borders}"/>`;
+  svg._cells = new Map(cells.map(c => [`${c.region}|${c.dep.name}`, c]));
+}
+
+// Details shown in the side card (desktop) and under the search bar (mobile).
+function cellDetailsHTML(c) {
+  const g = (c.dep.grade || '?').toUpperCase();
+  const members = memberCounts[c.region] || 0;
+  return `<h3>${escHTML(c.dep.name)}</h3>
+    ${c.dep.party ? `<div class="info-row"><span class="info-label">Strana</span><span class="info-value">${escHTML(c.dep.party)}</span></div>` : ''}
+    <div class="info-row"><span class="info-label">Kraj</span><span class="info-value">${escHTML(c.region)}</span></div>
+    <div class="info-row"><span class="info-label">Hodnocení</span><span class="info-value"><span class="grade-badge" style="background:${gradeColour(g)};color:${GRADE_DARK_TEXT.has(g) ? '#333' : '#fff'}">${GRADE_DISPLAY[g] ?? g}</span></span></div>
+    <div class="info-row"><span class="info-label">Signatáři v kraji</span><span class="info-value">${members}</span></div>`;
+}
+
+function showDetails(c) {
+  const href = `scorecard.html?constituency=${encodeURIComponent(c.region)}`;
+  document.getElementById('info-card').innerHTML =
+    cellDetailsHTML(c) + `<a class="scorecard-link" href="${href}">Zobrazit hodnocení kraje →</a>`;
+  const mob = document.getElementById('map-info-mobile');
+  mob.querySelector('.info-body').innerHTML = cellDetailsHTML(c);
+  mob.querySelector('.scorecard-link').href = href;
+  mob.classList.add('has-selection');
+}
+
+(function wireMap() {
+  const svg = document.getElementById('hex-svg');
+  const tip = document.getElementById('tooltip');
+  const cellFor = e => {
+    const p = e.target.closest('polygon');
+    return p && svg._cells ? svg._cells.get(p.dataset.key) : null;
+  };
+  svg.addEventListener('mousemove', e => {
+    const c = cellFor(e);
+    if (!c) { tip.style.display = 'none'; return; }
+    const g = (c.dep.grade || '?').toUpperCase();
+    const extra = view === 'grade'
+      ? `Hodnocení: ${GRADE_DISPLAY[g] ?? g}`
+      : `Signatáři v kraji: ${memberCounts[c.region] || 0}`;
+    tip.innerHTML = `<strong>${escHTML(c.dep.name)}</strong>${c.dep.party ? escHTML(c.dep.party) + ' · ' : ''}${escHTML(c.region)}<br>${extra}`;
+    tip.style.display = 'block';
+    const x = e.clientX + 14, y = e.clientY + 14;
+    tip.style.left = Math.min(x, window.innerWidth - tip.offsetWidth - 8) + 'px';
+    tip.style.top  = Math.min(y, window.innerHeight - tip.offsetHeight - 8) + 'px';
+    if (!selectedKey) showDetails(c);
+  });
+  svg.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  svg.addEventListener('click', e => {
+    const c = cellFor(e);
+    if (!c) return;
+    const key = `${c.region}|${c.dep.name}`;
+    selectedKey = selectedKey === key ? null : key;
+    showDetails(c);
+    renderMap();
+  });
+})();
+
 // ── Render ────────────────────────────────────────────────────────
 function render() {
+  renderMap();
   const list = document.getElementById('region-list');
   list.innerHTML = '';
   const filtered = searchQuery ? regions.filter(r => matchesSearch(r.name, searchQuery)) : null;
@@ -322,7 +483,7 @@ function renderLegend() {
     const notScoredGrade = gradeEntries.find(([g]) => g === '?');
     el.innerHTML = `
       <div class="legend-title">Hodnocení bezpečnosti AI</div>
-      <div class="legend-subtitle legend-subtitle-muted">Za každého současného poslance, od BBAI</div>
+      <div class="legend-subtitle legend-subtitle-muted">Jeden šestiúhelník = jeden současný poslanec</div>
       <div class="legend-items">
         ${mainGrades.map(([grade, colour]) => `
           <div class="legend-item">
@@ -341,9 +502,9 @@ function renderLegend() {
             <span>Nehodnoceno</span>
           </div>` : ''}
       </div>
-      <div class="cb-group expanded" id="cb-group" style="margin-top:14px">
-        <button type="button" id="btn-cb" class="cb-toggle" aria-pressed="${colourblind}" title="Použít paletu vhodnou pro barvoslepost (modro-oranžová místo zeleno-červené)">Režim pro barvoslepost</button>
-        <button type="button" id="btn-cb-by" class="cb-toggle cb-sub" aria-pressed="${cbBlueYellow}" title="Přepnout na paletu pro modro-žlutou barvoslepost (tritanopii): zeleno-purpurová místo modro-oranžové" ${colourblind ? '' : 'hidden'}>Modro-žlutá barvoslepost</button>
+      <div class="cb-group${colourblind ? " expanded" : ""}" id="cb-group" style="margin-top:14px">
+        <button type="button" id="btn-cb" class="cb-toggle${colourblind ? " active" : ""}" aria-pressed="${colourblind}" title="Použít paletu vhodnou pro barvoslepost (modro-oranžová místo zeleno-červené)">Režim pro barvoslepost</button>
+        <button type="button" id="btn-cb-by" class="cb-toggle cb-sub${cbBlueYellow ? " active" : ""}" aria-pressed="${cbBlueYellow}" title="Přepnout na paletu pro modro-žlutou barvoslepost (tritanopii): zeleno-purpurová místo modro-oranžové" ${colourblind ? '' : 'hidden'}>Modro-žlutá barvoslepost</button>
       </div>
       <div class="legend-info">
         <span class="legend-info-link" id="gradeInfoLink">Jak se známky počítají?</span>
@@ -356,19 +517,19 @@ function renderLegend() {
       <div class="legend-title">Signatáři BBAI</div>
       <div class="legend-subtitle legend-subtitle-muted">Signatáři BBAI podle kraje</div>
       <div class="legend-items">
-        <div class="legend-item"><span>Řazeno podle počtu podpisů. Tmavší = více signatářů.</span></div>
+        <div class="legend-item"><span>Šestiúhelníky jsou obarvené podle počtu signatářů v kraji: tmavší = více. Seznam krajů pod mapou je seřazený podle počtu podpisů.</span></div>
       </div>`;
   }
 }
 
 function setColourblind(on) {
   colourblind = !!on;
-  try { localStorage.setItem('asva-map-cb', colourblind ? '1' : '0'); } catch {}
+  try { localStorage.setItem('bbai-map-cb', colourblind ? '1' : '0'); } catch {}
   render();
 }
 function setBlueYellow(on) {
   cbBlueYellow = !!on;
-  try { localStorage.setItem('asva-map-by', cbBlueYellow ? '1' : '0'); } catch {}
+  try { localStorage.setItem('bbai-map-by', cbBlueYellow ? '1' : '0'); } catch {}
   render();
 }
 

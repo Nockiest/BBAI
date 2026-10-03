@@ -5,8 +5,9 @@
   "scripts": {
     "fetch-data": "node scripts/fetch-data.js",
     "import-ratings": "node scripts/import-ratings.js",
-    "build": "node scripts/fetch-data.js",
-    "dev": "node scripts/fetch-data.js && wrangler pages dev . --compatibility-date=2024-01-01"
+    "build": "node scripts/fetch-data.js && node scripts/build-hex-layout.js",
+    "dev": "node scripts/fetch-data.js && node scripts/build-hex-layout.js && wrangler pages dev . --compatibility-date=2024-01-01",
+    "build-hex-layout": "node scripts/build-hex-layout.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"

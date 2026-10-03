@@ -1,6 +1,7 @@
 node_modules/
 .dev.vars
 data.json
+hex-layout.json
 
 # Unused assets kept locally as backup — not deployed (recoverable from git history)
 pledge-icon.png
