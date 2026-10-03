@@ -8,3 +8,5 @@ pledge-icon.png
 pledge-icon.svg
 hex-constituencies.csv
 sitting-mps-2024.csv
+
+.wrangler/tmp/*
